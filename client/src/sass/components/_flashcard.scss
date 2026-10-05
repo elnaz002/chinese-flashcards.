@@ -1,0 +1,154 @@
+// ============================================
+// Flashcard
+// ============================================
+
+@use "../utilities/variables" as *;
+@use "../utilities/mixins" as *;
+
+.flashcard-wrapper {
+  perspective: 1500px;
+  margin-bottom: 20px;
+  height: 480px;
+}
+
+.flashcard {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform $transition-slow;
+  cursor: pointer;
+
+  &.is-flipped {
+    transform: rotateY(180deg);
+  }
+}
+
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  background: $card-bg;
+  border-radius: $border-radius;
+  box-shadow: $shadow;
+  @include flex-center(column);
+  padding: 25px;
+  text-align: center;
+  border: 3px solid rgba(74, 222, 128, 0.15);
+}
+
+.card-front {
+  background: linear-gradient(135deg, #ffffff, #f0fdf4);
+}
+
+.card-back {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  transform: rotateY(180deg);
+  justify-content: space-around;
+
+  .panda-decor {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2.5rem;
+    opacity: 0.3;
+  }
+
+  h3 {
+    color: $bamboo-dark;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+  }
+}
+
+.image-container img {
+  width: 130px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: $border-radius;
+  margin-bottom: 15px;
+  border: 4px solid $bamboo-green;
+  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
+}
+
+.clickable-image {
+  cursor: zoom-in;
+  transition:
+    transform $transition-fast,
+    box-shadow $transition-fast;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(74, 222, 128, 0.5);
+  }
+}
+
+.character-display {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.chinese-char {
+  font-family: $font-chinese;
+  font-size: 4.5rem;
+  color: $bamboo-dark;
+  line-height: 1.2;
+  text-shadow: 2px 2px 4px rgba(74, 222, 128, 0.2);
+}
+
+.pinyin-display {
+  font-size: 1.6rem;
+  color: $primary-blue;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.sentence-box {
+  background: white;
+  padding: 15px 25px;
+  border-radius: $border-radius-sm;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 15px;
+  border: 2px solid rgba(74, 222, 128, 0.3);
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.1);
+}
+
+.sentence-chinese {
+  font-family: $font-chinese;
+  font-size: 1.4rem;
+  color: $bamboo-dark;
+  font-weight: 600;
+}
+
+.sentence-pinyin {
+  font-size: 1rem;
+  color: $text-light;
+  width: 100%;
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-top: 10px;
+  font-style: italic;
+}
+
+.meaning-fa {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: $bamboo-dark;
+  margin-bottom: 25px;
+}
+
+.sentence-meaning-fa {
+  font-size: 1.3rem;
+  color: $text-color;
+  margin-bottom: 25px;
+}

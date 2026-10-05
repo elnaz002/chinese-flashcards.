@@ -1,0 +1,227 @@
+// ============================================
+// Tags (Categories)
+// ============================================
+
+@use "../utilities/variables" as *;
+@use "../utilities/mixins" as *;
+
+// ============ Form: Tag Suggestions ============
+.tags-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: $border-radius-sm;
+  border: 2px dashed #e2e8f0;
+
+  @include dark-mode {
+    background: rgba(15, 23, 42, 0.5);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.tag-suggestion {
+  padding: 6px 12px;
+  border: 2px solid $bamboo-light;
+  border-radius: 20px;
+  background: white;
+  font-family: $font-fa;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $bamboo-dark;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: $bamboo-light;
+    transform: translateY(-2px);
+  }
+
+  &.selected {
+    background: $bamboo-green;
+    color: white;
+    border-color: $bamboo-dark;
+  }
+
+  @include dark-mode {
+    background: rgba(255, 255, 255, 0.08);
+    color: $bamboo-light;
+    border-color: rgba(74, 222, 128, 0.3);
+
+    &:hover {
+      background: rgba(74, 222, 128, 0.15);
+    }
+
+    &.selected {
+      background: $bamboo-green;
+      color: white;
+    }
+  }
+}
+
+// ============ Form: Selected Tags ============
+.selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  min-height: 0;
+
+  &:empty {
+    display: none;
+  }
+
+  .tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, $bamboo-green, $bamboo-dark);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    animation: tagPop 0.3s ease;
+
+    .remove-tag {
+      background: rgba(255, 255, 255, 0.3);
+      border: none;
+      color: white;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      font-size: 0.7rem;
+      cursor: pointer;
+      @include flex-center;
+      transition: all $transition-fast;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.5);
+        transform: scale(1.15);
+      }
+    }
+  }
+}
+
+@keyframes tagPop {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// ============ Form: Custom Tag Input ============
+.custom-tag-input {
+  display: flex;
+  gap: 8px;
+
+  input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: $border-radius-sm;
+    font-family: $font-fa;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color $transition-base;
+
+    &:focus {
+      border-color: $bamboo-green;
+    }
+
+    @include dark-mode {
+      background: $dark-card-bg;
+      color: $dark-text-color;
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  .add-tag-btn {
+    padding: 10px 18px;
+    background: linear-gradient(135deg, $bamboo-green, $bamboo-dark);
+    color: white;
+    border: none;
+    border-radius: $border-radius-sm;
+    font-family: $font-fa;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all $transition-base;
+    white-space: nowrap;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(74, 222, 128, 0.4);
+    }
+  }
+}
+
+// ============ Modal: Display Card Tags ============
+.card-tags-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 15px;
+  min-height: 0;
+
+  &:empty {
+    display: none;
+  }
+
+  .display-tag {
+    padding: 4px 12px;
+    background: rgba(74, 222, 128, 0.15);
+    color: $bamboo-dark;
+    border: 1px solid rgba(74, 222, 128, 0.3);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    @include dark-mode {
+      background: rgba(74, 222, 128, 0.2);
+      color: $bamboo-light;
+    }
+  }
+}
+
+// ============ Favorite Button ============
+.favorite-card-btn {
+  padding: 12px 15px;
+  background: white;
+  color: $chinese-gold;
+  border: 2px solid $chinese-gold;
+  border-radius: $border-radius-sm;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all $transition-base;
+  @include flex-center;
+
+  &:hover {
+    background: $chinese-gold;
+    color: white;
+    transform: scale(1.05);
+  }
+
+  &.active {
+    background: $chinese-gold;
+    color: white;
+    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.5);
+  }
+
+  @include dark-mode {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: $chinese-gold;
+
+    &.active {
+      background: $chinese-gold;
+      color: white;
+    }
+  }
+}

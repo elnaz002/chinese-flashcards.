@@ -1,0 +1,262 @@
+// ============================================
+// Buttons
+// ============================================
+
+@use "../utilities/variables" as *;
+@use "../utilities/mixins" as *;
+
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, $bamboo-green, $bamboo-dark);
+  color: white;
+  border: none;
+  border-radius: $border-radius-sm;
+  font-family: $font-fa;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all $transition-base;
+  box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
+  margin-top: 10px;
+
+  &:hover {
+    background: linear-gradient(135deg, $bamboo-dark, #15803d);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(22, 163, 74, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+  }
+}
+
+.add-btn {
+  background: linear-gradient(135deg, $bamboo-green, $bamboo-dark);
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  border-radius: $border-radius-sm;
+  font-family: $font-fa;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all $transition-base;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(74, 222, 128, 0.5);
+  }
+}
+
+.speak-btn {
+  @include flex-center;
+  background: linear-gradient(135deg, $chinese-red, #b91c1c);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all $transition-fast;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  flex-shrink: 0;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 18px rgba(220, 38, 38, 0.5);
+  }
+
+  &.small {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+}
+
+.suggest-btn {
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: $border-radius-sm;
+  cursor: pointer;
+  font-family: $font-fa;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-top: 8px;
+  transition: all $transition-base;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(168, 85, 247, 0.4);
+  }
+}
+
+.nav-btn {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: $border-radius-sm;
+  font-family: $font-fa;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all $transition-base;
+  background: #f1f5f9;
+  color: $text-color;
+
+  &:hover {
+    background: #e2e8f0;
+    transform: translateY(-2px);
+  }
+
+  &.next {
+    background: linear-gradient(135deg, $bamboo-green, $bamboo-dark);
+    color: white;
+    box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+
+    &:hover {
+      box-shadow: 0 6px 18px rgba(74, 222, 128, 0.5);
+    }
+  }
+
+  // 🆕 Dark theme
+  @include dark-mode {
+    background: rgba(255, 255, 255, 0.08);
+    color: $dark-text-color;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+  }
+}
+
+// Edit & Delete Buttons
+.edit-card-btn,
+.delete-card-btn {
+  padding: 12px 18px;
+  border: none;
+  border-radius: $border-radius-sm;
+  font-family: $font-fa;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all $transition-base;
+  flex: 1;
+}
+
+.edit-card-btn {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(59, 130, 246, 0.5);
+  }
+}
+
+.delete-card-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(239, 68, 68, 0.5);
+  }
+}
+
+// 🆕 Start Quiz Button
+.start-quiz-btn {
+  padding: 14px 30px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  border: none;
+  border-radius: $border-radius-sm;
+  font-family: $font-fa;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all $transition-base;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.6);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+  }
+}
+
+// 🆕 Start Quiz Final Button (on quiz.html)
+.start-quiz-final-btn {
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(135deg, $bamboo-green, $bamboo-dark);
+  color: white;
+  border: none;
+  border-radius: $border-radius-sm;
+  font-family: $font-fa;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all $transition-base;
+  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
+  margin-top: 20px;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(74, 222, 128, 0.6);
+  }
+}
+
+// 🆕 Retry Button
+.retry-btn {
+  padding: 14px 30px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  border-radius: $border-radius-sm;
+  font-family: $font-fa;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all $transition-base;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
+  }
+}
+
+// 🆕 Back to HSK Button
+.back-to-hsk-btn {
+  padding: 14px 30px;
+  background: linear-gradient(135deg, $bamboo-green, $bamboo-dark);
+  color: white;
+  border: none;
+  border-radius: $border-radius-sm;
+  font-family: $font-fa;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all $transition-base;
+  text-decoration: none;
+  display: inline-block;
+  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(74, 222, 128, 0.6);
+  }
+}

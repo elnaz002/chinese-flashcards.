@@ -1,0 +1,86 @@
+// ============================================
+// HSK Grid
+// ============================================
+
+@use "../utilities/variables" as *;
+@use "../utilities/mixins" as *;
+
+.hsk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 25px;
+  padding: 20px;
+}
+
+.hsk-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  padding: 30px 20px;
+  border-radius: $border-radius;
+  text-decoration: none;
+  color: $text-color;
+  box-shadow: $shadow;
+  transition: all $transition-base;
+  border: 3px solid transparent;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, $bamboo-green, $bamboo-dark);
+    transform: scaleX(0);
+    transition: transform $transition-base;
+    transform-origin: right;
+  }
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: $shadow-hover;
+    border-color: $bamboo-green;
+
+    &::before {
+      transform: scaleX(1);
+    }
+    .hsk-icon {
+      transform: scale(1.2) rotate(10deg);
+    }
+  }
+
+  .hsk-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    transition: transform $transition-base;
+  }
+
+  .hsk-number {
+    font-size: 3rem;
+    font-weight: 700;
+    color: $bamboo-dark;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .hsk-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $text-color;
+    margin-bottom: 8px;
+  }
+
+  .hsk-desc {
+    font-size: 0.9rem;
+    color: $bamboo-dark;
+    background: $bamboo-light;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+}

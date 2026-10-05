@@ -1,0 +1,220 @@
+// ============================================
+// Gallery
+// ============================================
+
+@use "../utilities/variables" as *;
+@use "../utilities/mixins" as *;
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+  padding: 15px 0;
+}
+
+.small-card {
+  background: white;
+  border-radius: $border-radius;
+  padding: 15px;
+  box-shadow: $shadow-sm;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all $transition-base;
+  text-align: center;
+  border: 3px solid transparent;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "🐼";
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    font-size: 1rem;
+    opacity: 0;
+    transition: opacity $transition-base;
+  }
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: $shadow-hover;
+    border-color: $bamboo-green;
+
+    &::before {
+      opacity: 0.6;
+    }
+  }
+
+  img {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: $border-radius-sm;
+    margin-bottom: 10px;
+    border: 3px solid $bamboo-light;
+  }
+
+  .small-char {
+    font-family: $font-chinese;
+    font-size: 1.8rem;
+    color: $bamboo-dark;
+    font-weight: 700;
+  }
+
+  .small-pinyin {
+    font-size: 0.9rem;
+    color: $text-light;
+    margin-top: 5px;
+  }
+  // 🆕 Favorite badge
+  .favorite-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: 1rem;
+    z-index: 2;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    animation: starPop 0.4s ease;
+  }
+
+  // 🆕 Mini tags
+  .small-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+    margin-top: 6px;
+
+    .mini-tag {
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      background: rgba(74, 222, 128, 0.15);
+      color: $bamboo-dark;
+      border-radius: 10px;
+      font-weight: 600;
+
+      @include dark-mode {
+        background: rgba(74, 222, 128, 0.25);
+        color: $bamboo-light;
+      }
+    }
+  }
+  // 🆕 Favorite state for whole card
+  &.is-favorite {
+    border-color: $chinese-gold;
+    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: $text-light;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: $border-radius;
+  border: 3px dashed $bamboo-green;
+
+  .empty-icon {
+    font-size: 5rem;
+    margin-bottom: 20px;
+    animation: bounce 2s infinite;
+  }
+
+  p {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: $bamboo-dark;
+    font-weight: 600;
+  }
+
+  .empty-hint {
+    font-size: 0.95rem;
+    color: $text-light;
+    font-weight: 400;
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+// Lightbox
+.lightbox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 20px;
+  cursor: zoom-out;
+
+  &.active {
+    display: flex;
+    animation: fadeIn $transition-base;
+  }
+
+  img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: $border-radius;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: zoomIn $transition-base;
+    border: 4px solid $bamboo-green;
+  }
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  background: white;
+  color: $text-color;
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  @include flex-center;
+  font-weight: bold;
+  transition: all $transition-base;
+
+  &:hover {
+    background: $chinese-red;
+    color: white;
+    transform: rotate(90deg);
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes starPop {
+  0% {
+    transform: scale(0) rotate(-180deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}

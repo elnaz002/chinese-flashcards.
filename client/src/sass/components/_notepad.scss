@@ -1,0 +1,380 @@
+// ============================================
+// Notepad
+// ============================================
+
+@use "../utilities/variables" as *;
+@use "../utilities/mixins" as *;
+
+.notepad-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1500;
+  padding: 20px;
+
+  &.active {
+    display: flex;
+    animation: fadeIn $transition-base;
+  }
+}
+
+.notepad-content {
+  width: 100%;
+  max-width: 900px;
+  height: 90vh;
+  background: white;
+  border-radius: $border-radius;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp $transition-base;
+  border: 3px solid $bamboo-green;
+
+  @include dark-mode {
+    background: $dark-card-bg;
+    color: $dark-text-color;
+  }
+}
+
+.notepad-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px;
+  background: linear-gradient(135deg, $bamboo-green, $bamboo-dark);
+  color: white;
+
+  h3 {
+    font-size: 1.3rem;
+    margin: 0;
+  }
+}
+
+.notepad-close {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+  @include flex-center;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: $chinese-red;
+    transform: rotate(90deg);
+  }
+}
+
+.notepad-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+
+  @include dark-mode {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: $dark-border-color;
+  }
+
+  select,
+  input[type="color"] {
+    padding: 6px 10px;
+    border: 2px solid #e2e8f0;
+    border-radius: $border-radius-sm;
+    font-family: $font-fa;
+    font-size: 0.85rem;
+    cursor: pointer;
+    background: white;
+
+    &:focus {
+      outline: none;
+      border-color: $bamboo-green;
+    }
+
+    @include dark-mode {
+      background: $dark-card-bg;
+      color: $dark-text-color;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  input[type="color"] {
+    width: 45px;
+    height: 35px;
+    padding: 2px;
+  }
+
+  input[type="range"] {
+    width: 120px;
+    cursor: pointer;
+  }
+}
+
+.tool-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  &.hidden {
+    display: none;
+  }
+}
+
+.tool-btn {
+  padding: 8px 15px;
+  border: 2px solid transparent;
+  border-radius: $border-radius-sm;
+  background: white;
+  font-family: $font-fa;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: $bamboo-light;
+  }
+
+  &.active {
+    background: $bamboo-green;
+    color: white;
+    border-color: $bamboo-dark;
+  }
+
+  @include dark-mode {
+    background: rgba(255, 255, 255, 0.08);
+    color: $dark-text-color;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+  }
+}
+
+.tool-btn-small {
+  padding: 6px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: $border-radius-sm;
+  background: white;
+  font-family: $font-fa;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: $bamboo-light;
+  }
+
+  &.active {
+    background: $chinese-red;
+    color: white;
+  }
+
+  @include dark-mode {
+    background: rgba(255, 255, 255, 0.08);
+    color: $dark-text-color;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+.brush-size-display {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: $bamboo-dark;
+  min-width: 25px;
+  text-align: center;
+}
+
+// 🆕 Grid Size Controls
+.grid-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: $bamboo-dark;
+  white-space: nowrap;
+
+  @include dark-mode {
+    color: $bamboo-light;
+  }
+}
+
+.grid-size-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 2px solid #e2e8f0;
+  border-radius: $border-radius-sm;
+  background: white;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all $transition-fast;
+  @include flex-center;
+
+  &:hover {
+    background: $bamboo-light;
+    border-color: $bamboo-green;
+    transform: scale(1.05);
+  }
+
+  &.active {
+    background: $bamboo-green;
+    color: white;
+    border-color: $bamboo-dark;
+    box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
+  }
+
+  @include dark-mode {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    &.active {
+      background: $bamboo-green;
+      border-color: $bamboo-dark;
+    }
+  }
+}
+
+.save-note-btn {
+  padding: 8px 20px;
+  background: linear-gradient(135deg, $bamboo-green, $bamboo-dark);
+  color: white;
+  border: none;
+  border-radius: $border-radius-sm;
+  font-family: $font-fa;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all $transition-fast;
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(74, 222, 128, 0.5);
+  }
+}
+
+.notepad-body {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: white;
+
+  @include dark-mode {
+    background: $dark-card-bg;
+  }
+}
+
+.notepad-text,
+.notepad-canvas {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity $transition-base;
+
+  &.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.notepad-text textarea {
+  width: 100%;
+  height: 100%;
+  padding: 25px;
+  border: none;
+  outline: none;
+  resize: none;
+  font-size: 18px;
+  line-height: 1.8;
+  color: $text-color;
+  background: #fffef7;
+  font-family: $font-fa;
+  direction: rtl;
+
+  &::placeholder {
+    color: #94a3b8;
+    font-style: italic;
+  }
+
+  @include dark-mode {
+    background: rgba(15, 23, 42, 0.6);
+    color: $dark-text-color;
+  }
+}
+
+// 🆕 Notepad Canvas
+// The grid is applied via CSS background-image.
+// Grid size is controlled by a CSS variable --grid-size
+.notepad-canvas {
+  overflow: hidden;
+  background-color: white;
+
+  // Default grid size
+  --grid-size: 20px;
+
+  background-image:
+    linear-gradient(to right, rgba(74, 222, 128, 0.2) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(74, 222, 128, 0.2) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+
+  &.grid-hidden {
+    background-image: none;
+  }
+
+  @include dark-mode {
+    background-color: #0f172a;
+    background-image:
+      linear-gradient(to right, rgba(74, 222, 128, 0.25) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(74, 222, 128, 0.25) 1px, transparent 1px);
+  }
+}
+
+.notepad-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.note-btn {
+  flex: 1;
+  padding: 14px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  border: none;
+  border-radius: $border-radius-sm;
+  font-family: $font-fa;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all $transition-base;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(245, 158, 11, 0.5);
+  }
+}

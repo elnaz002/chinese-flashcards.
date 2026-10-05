@@ -1,0 +1,61 @@
+// ============================================
+// Variables - Panda Theme (Light + Dark)
+// ============================================
+
+// Primary Colors
+$panda-black: #1a1a1a;
+$panda-white: #ffffff;
+$bamboo-green: #4ade80;
+$bamboo-dark: #16a34a;
+$bamboo-light: #bbf7d0;
+
+// Accent Colors
+$chinese-red: #dc2626;
+$chinese-gold: #fbbf24;
+$primary-blue: #2b6a9e;
+$dark-blue: #1e4d73;
+
+// Light Theme (Default)
+$bg-gradient: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%);
+$card-bg: #ffffff;
+$text-color: #1a1a1a;
+$text-light: #666666;
+$border-color: rgba(74, 222, 128, 0.2);
+
+// Dark Theme
+$dark-bg-gradient: linear-gradient(
+  135deg,
+  #0f172a 0%,
+  #1e293b 50%,
+  #064e3b 100%
+);
+$dark-card-bg: #1e293b;
+$dark-text-color: #f1f5f9;
+$dark-text-light: #94a3b8;
+$dark-border-color: rgba(74, 222, 128, 0.3);
+$dark-overlay: rgba(15, 23, 42, 0.95);
+
+// Shadows
+$shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+$shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+$shadow-hover: 0 15px 35px rgba(0, 0, 0, 0.15);
+$shadow-panda: 0 10px 30px rgba(74, 222, 128, 0.3);
+
+// Border Radius
+$border-radius-sm: 10px;
+$border-radius: 20px;
+$border-radius-lg: 30px;
+
+// Fonts
+$font-fa: "Vazirmatn", sans-serif;
+$font-chinese: "Noto Sans SC", sans-serif;
+
+// Breakpoints
+$breakpoint-mobile: 480px;
+$breakpoint-tablet: 768px;
+$breakpoint-desktop: 1024px;
+
+// Transitions
+$transition-fast: 0.2s ease;
+$transition-base: 0.3s ease;
+$transition-slow: 0.6s cubic-bezier(0.4, 0, 0.2, 1);

@@ -1,0 +1,26 @@
+{
+  "name": "chinese-flashcards",
+  "version": "1.0.0",
+  "description": "Chinese HSK Flashcards App - Learn Chinese Characters with Images and Audio",
+  "main": "index.html",
+  "scripts": {
+    "sass": "sass src/sass/main.scss dist/css/style.css --watch",
+    "sass:build": "sass src/sass/main.scss dist/css/style.css --style compressed --no-source-map",
+    "serve": "live-server --port=3000 --open=/dist/index.html",
+    "dev": "concurrently \"npm run sass\" \"npm run serve\"",
+    "build": "npm run sass:build"
+  },
+  "keywords": [
+    "chinese",
+    "flashcards",
+    "hsk",
+    "learning",
+    "sass"
+  ],
+  "author": "Elnaz Nemati",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "live-server": "^1.2.2",
+    "sass": "^1.69.5"
+  }
+}

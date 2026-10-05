@@ -1,0 +1,51 @@
+// ============================================
+// Mixins
+// ============================================
+
+@use "variables" as *;
+
+@mixin flex-center($direction: row) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin card-shadow {
+  box-shadow: $shadow;
+  transition: box-shadow $transition-base;
+
+  &:hover {
+    box-shadow: $shadow-hover;
+  }
+}
+
+@mixin glass-effect($opacity: 0.15) {
+  background: rgba(255, 255, 255, $opacity);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@mixin responsive($breakpoint) {
+  @if $breakpoint == mobile {
+    @media (max-width: $breakpoint-mobile) {
+      @content;
+    }
+  } @else if $breakpoint == tablet {
+    @media (max-width: $breakpoint-tablet) {
+      @content;
+    }
+  } @else if $breakpoint == desktop {
+    @media (max-width: $breakpoint-desktop) {
+      @content;
+    }
+  }
+}
+
+// 🆕 Dark theme helper
+@mixin dark-mode {
+  body.dark-theme & {
+    @content;
+  }
+}

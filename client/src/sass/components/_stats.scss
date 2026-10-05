@@ -1,0 +1,64 @@
+// ============================================
+// Stats Bar
+// ============================================
+
+@use "../utilities/variables" as *;
+@use "../utilities/mixins" as *;
+
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  background: white;
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+  border: 2px solid rgba(74, 222, 128, 0.15);
+  transition: all $transition-base;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: $shadow;
+    border-color: $bamboo-green;
+  }
+
+  @include dark-mode {
+    background: $dark-card-bg;
+    border-color: $dark-border-color;
+  }
+
+  .stat-icon {
+    font-size: 1.8rem;
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, $bamboo-light, rgba(74, 222, 128, 0.3));
+    border-radius: 50%;
+    @include flex-center;
+    flex-shrink: 0;
+  }
+
+  .stat-info {
+    display: flex;
+    flex-direction: column;
+
+    .stat-number {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: $bamboo-dark;
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: $text-light;
+      font-weight: 500;
+    }
+  }
+}

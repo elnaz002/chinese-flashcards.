@@ -1,0 +1,30 @@
+// ============================================
+// Typography
+// ============================================
+
+@use "../utilities/variables" as *;
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+p {
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: color $transition-base;
+}
+
+.chinese-text,
+.chinese-char,
+.sentence-chinese,
+.small-char {
+  font-family: $font-chinese;
+}

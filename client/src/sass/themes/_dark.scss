@@ -1,0 +1,75 @@
+// ============================================
+// Dark Theme Overrides
+// ============================================
+
+@use "../utilities/variables" as *;
+@use "../utilities/mixins" as *;
+
+// Global dark theme helper
+body.dark-theme {
+  background: $dark-bg-gradient;
+  color: $dark-text-color;
+
+  // All h3, h2, h1 titles
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: $bamboo-light;
+  }
+
+  // Text lighten
+  .hint,
+  .description,
+  .subtitle {
+    color: $dark-text-light;
+  }
+
+  // Form labels
+  .form-group label,
+  .input-group label {
+    color: $dark-text-color;
+  }
+
+  // Input fields
+  input[type="text"],
+  input[type="url"],
+  input[type="number"],
+  input[type="password"],
+  input[type="email"] {
+    background: rgba(15, 23, 42, 0.8);
+    color: $dark-text-color;
+    border-color: rgba(255, 255, 255, 0.15);
+
+    &::placeholder {
+      color: $dark-text-light;
+    }
+  }
+
+  // Meaning texts
+  .meaning-fa,
+  .sentence-meaning-fa {
+    color: $bamboo-light;
+  }
+
+  // Section titles in forms
+  .form-modal h3,
+  .notepad-header h3 {
+    color: white;
+  }
+}
+
+// Transition smoothness for theme switching
+body,
+.app-container,
+.card-face,
+.small-card,
+.modal-content,
+.hsk-card,
+.input-group input,
+.form-group input {
+  transition:
+    background $transition-base,
+    color $transition-base,
+    border-color $transition-base;
+}

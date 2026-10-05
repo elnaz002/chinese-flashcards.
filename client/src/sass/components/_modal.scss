@@ -1,0 +1,110 @@
+// ============================================
+// Modal
+// ============================================
+
+@use "../utilities/variables" as *;
+@use "../utilities/mixins" as *;
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+  overflow-y: auto;
+
+  &.active {
+    display: flex;
+    animation: fadeIn $transition-base;
+  }
+}
+
+.modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 550px;
+  background: white;
+  border-radius: $border-radius;
+  padding: 30px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp $transition-base;
+  border: 3px solid rgba(74, 222, 128, 0.2);
+}
+
+.close-modal {
+  position: absolute;
+  top: 12px;
+  left: 15px;
+  background: linear-gradient(135deg, $chinese-red, #b91c1c);
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  @include flex-center;
+  transition: all $transition-fast;
+  z-index: 10;
+
+  &:hover {
+    transform: scale(1.1) rotate(90deg);
+  }
+}
+
+.form-modal {
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+
+  h3 {
+    text-align: center;
+    color: $bamboo-dark;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+  }
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.card-manage-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 15px;
+  border-top: 2px dashed #e2e8f0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

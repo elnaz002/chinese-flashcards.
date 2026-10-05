@@ -1,0 +1,190 @@
+// ============================================
+// Global Styles
+// ============================================
+
+@use "../utilities/variables" as *;
+@use "../utilities/mixins" as *;
+
+.app-container {
+  width: 100%;
+  max-width: 1100px;
+  padding: 40px 30px;
+  position: relative;
+  z-index: 1;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow;
+  border: 2px solid $border-color;
+  transition: all $transition-base;
+
+  background-image: url("../../../public/images/back.jfif");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: $border-radius-lg;
+    z-index: -1;
+    transition: background $transition-base;
+  }
+
+  // 🆕 Dark theme
+  @include dark-mode {
+    border-color: $dark-border-color;
+
+    &::before {
+      background: rgba(15, 23, 42, 0.92);
+    }
+  }
+}
+
+// 🆕 Theme Toggle Button
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid $bamboo-green;
+  @include flex-center;
+  cursor: pointer;
+  z-index: 900;
+  box-shadow: $shadow;
+  transition: all $transition-base;
+  font-size: 1.4rem;
+
+  &:hover {
+    transform: scale(1.1) rotate(15deg);
+    box-shadow: $shadow-hover;
+  }
+
+  .theme-icon {
+    transition: transform $transition-base;
+  }
+
+  // 🆕 Dark theme
+  @include dark-mode {
+    background: $dark-card-bg;
+    border-color: $bamboo-light;
+    color: $bamboo-light;
+  }
+}
+
+// 🆕 Login Button (Placeholder)
+.login-btn-placeholder {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  border-radius: 30px;
+  background: white;
+  border: 2px solid $bamboo-green;
+  font-family: $font-fa;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  z-index: 900;
+  box-shadow: $shadow;
+  transition: all $transition-base;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-hover;
+  }
+
+  // 🆕 Dark theme
+  @include dark-mode {
+    background: $dark-card-bg;
+    border-color: $bamboo-light;
+    color: $bamboo-light;
+  }
+
+  @include responsive(mobile) {
+    .login-text {
+      display: none;
+    }
+  }
+}
+
+// Voice Indicator
+.voice-indicator {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: white;
+  @include flex-center;
+  box-shadow: $shadow;
+  font-size: 1.3rem;
+  cursor: pointer;
+  z-index: 500;
+  transition: all $transition-base;
+  border: 2px solid #e2e8f0;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: $shadow-hover;
+  }
+
+  &.ready {
+    background: $bamboo-light;
+    border-color: $bamboo-green;
+  }
+
+  &.not-ready {
+    background: #fef3c7;
+    border-color: #fcd34d;
+  }
+
+  // 🆕 Dark theme
+  @include dark-mode {
+    background: $dark-card-bg;
+    border-color: $dark-text-light;
+
+    &.ready {
+      background: rgba(74, 222, 128, 0.2);
+      border-color: $bamboo-green;
+    }
+  }
+}
+
+// Toast Notification
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: $bamboo-dark;
+  color: white;
+  padding: 15px 30px;
+  border-radius: $border-radius-sm;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: all $transition-base;
+  z-index: 3000;
+  pointer-events: none;
+
+  &.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  &.error {
+    background: $chinese-red;
+  }
+}

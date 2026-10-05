@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🐼 HSK - کارت‌های من</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="../../public/images/panda-logo.png"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=Noto+Sans+SC:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../dist/css/style.css" />
+  </head>
+  <body class="panda-theme">
+    <!-- Theme Toggle (Floating) -->
+    <button class="theme-toggle" id="theme-toggle" title="تغییر تم">
+      <span class="theme-icon">🌙</span>
+    </button>
+
+    <div class="app-container">
+      <!-- Header -->
+      <header class="flashcard-header">
+        <a href="index.html" class="back-btn">← بازگشت</a>
+        <h2>🐼 HSK <span id="level-display">1</span> - کارت‌های من</h2>
+        <button id="add-card-btn" class="add-btn">+ افزودن کارت</button>
+      </header>
+
+      <!-- Stats Bar -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <div class="stat-icon">📚</div>
+          <div class="stat-info">
+            <span class="stat-number" id="stat-total">0</span>
+            <span class="stat-label">کل کارت‌ها</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">🏷️</div>
+          <div class="stat-info">
+            <span class="stat-number" id="stat-tags">0</span>
+            <span class="stat-label">دسته‌بندی‌ها</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">🔍</div>
+          <div class="stat-info">
+            <span class="stat-number" id="stat-filtered">0</span>
+            <span class="stat-label">نمایش داده‌شده</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search & Filter Bar -->
+      <div class="search-filter-bar">
+        <!-- Search Box -->
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input
+            type="text"
+            id="search-input"
+            placeholder="جستجو در کاراکتر، پینیین یا معنی..."
+          />
+          <button
+            class="clear-search-btn"
+            id="clear-search-btn"
+            title="پاک کردن"
+          >
+            ✕
+          </button>
+        </div>
+
+        <!-- Filter Dropdown -->
+        <select id="tag-filter" class="tag-filter-select">
+          <option value="all">🏷️ همه دسته‌ها</option>
+          <!-- Tags will be added here dynamically -->
+        </select>
+
+        <!-- View Mode Toggle -->
+        <div class="view-toggle">
+          <button class="view-btn active" id="view-all" title="همه">▦</button>
+          <button class="view-btn" id="view-favorites" title="محبوب‌ها">
+            ⭐
+          </button>
+        </div>
+      </div>
+
+      <!-- Quiz Action Bar -->
+      <div class="quiz-action-bar" id="quiz-action-bar">
+        <button class="start-quiz-btn" id="start-quiz-btn">
+          🎯 شروع آزمون
+        </button>
+        <span class="card-count-badge" id="card-count-badge">0 کارت</span>
+      </div>
+
+      <!-- No Results State -->
+      <div id="no-results" class="no-results" style="display: none">
+        <div class="no-results-icon">🔍</div>
+        <p>نتیجه‌ای یافت نشد!</p>
+        <p class="no-results-hint">عبارت جستجو یا فیلتر را تغییر دهید.</p>
+      </div>
+
+      <!-- Gallery -->
+      <div class="gallery-grid" id="gallery-grid"></div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state" style="display: none">
+        <div class="empty-icon">🐼</div>
+        <p>هنوز کارتی نساخته‌اید!</p>
+        <p class="empty-hint">
+          روی دکمه "افزودن کارت" کلیک کنید تا اولین کارت را بسازید.
+        </p>
+      </div>
+    </div>
+
+    <!-- Voice Indicator -->
+    <div class="voice-indicator" id="voice-indicator" title="وضعیت صدا">
+      <span id="voice-icon">🔊</span>
+    </div>
+
+    <!-- ========== Modal: Large Flashcard ========== -->
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal-content">
+        <button class="close-modal" id="close-modal">✕</button>
+
+        <!-- Tags Display -->
+        <div class="card-tags-display" id="card-tags-display"></div>
+
+        <div class="flashcard-wrapper">
+          <div class="flashcard" id="large-flashcard">
+            <div class="card-face card-front">
+              <div class="image-container">
+                <img
+                  id="modal-image"
+                  src=""
+                  alt="Character Image"
+                  class="clickable-image"
+                />
+              </div>
+              <div class="character-display">
+                <h1 class="chinese-char" id="modal-char">你好</h1>
+                <button class="speak-btn" id="speak-char-btn" title="پخش صدا">
+                  🔊
+                </button>
+              </div>
+              <div class="pinyin-display" id="modal-pinyin">Nǐ hǎo</div>
+              <div class="sentence-box">
+                <p class="sentence-chinese" id="modal-sentence">你好吗？</p>
+                <button
+                  class="speak-btn small"
+                  id="speak-sentence-btn"
+                  title="پخش جمله"
+                >
+                  🔊
+                </button>
+                <p class="sentence-pinyin" id="modal-sentence-pinyin">
+                  Nǐ hǎo ma?
+                </p>
+              </div>
+              <p class="hint">👆 کلیک: چرخش | 🔍 کلیک روی تصویر: بزرگ‌نمایی</p>
+            </div>
+
+            <div class="card-face card-back">
+              <div class="panda-decor">🐼</div>
+              <h3>معنی کلمه:</h3>
+              <p class="meaning-fa" id="modal-meaning">سلام</p>
+              <h3>معنی جمله:</h3>
+              <p class="sentence-meaning-fa" id="modal-sentence-meaning">
+                حال شما چطور است؟
+              </p>
+              <p class="hint">👆 کلیک: بازگشت</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="nav-btn prev" id="prev-btn">← قبلی</button>
+          <button class="note-btn" id="open-note-btn" title="یادداشت">
+            📝 یادداشت
+          </button>
+          <button class="nav-btn next" id="next-btn">بعدی →</button>
+        </div>
+
+        <div class="card-manage-actions">
+          <button
+            class="favorite-card-btn"
+            id="favorite-current-card-btn"
+            title="محبوب"
+          >
+            ☆
+          </button>
+          <button class="edit-card-btn" id="edit-current-card-btn">
+            ✏️ ویرایش
+          </button>
+          <button class="delete-card-btn" id="delete-current-card-btn">
+            🗑️ حذف
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== Lightbox ========== -->
+    <div class="lightbox-overlay" id="lightbox-overlay">
+      <button class="lightbox-close" id="lightbox-close">✕</button>
+      <img id="lightbox-image" src="" alt="Zoomed Image" />
+    </div>
+
+    <!-- ========== Modal: Add / Edit Card ========== -->
+    <div class="modal-overlay" id="add-modal-overlay">
+      <div class="modal-content form-modal">
+        <button class="close-modal" id="close-add-modal">✕</button>
+        <h3 id="form-title">🐼 افزودن کارت جدید</h3>
+
+        <form id="add-card-form">
+          <div class="form-group">
+            <label>تصویر (از گالری):</label>
+            <input type="file" id="input-image-file" accept="image/*" />
+            <div class="image-preview" id="image-preview">
+              <span>🐼 پیش‌نمایش تصویر</span>
+            </div>
+            <p class="compression-note">
+              💡 تصویر به صورت خودکار فشرده می‌شود.
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label>کاراکتر چینی:</label>
+            <input
+              type="text"
+              id="input-char"
+              placeholder="مثلاً: 学习"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>تلفظ (پینیین):</label>
+            <input type="text" id="input-pinyin" placeholder="Xuéxí" required />
+          </div>
+
+          <div class="form-group">
+            <label>معنی فارسی:</label>
+            <input
+              type="text"
+              id="input-meaning"
+              placeholder="درس خواندن"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>جمله چینی:</label>
+            <input type="text" id="input-sentence" placeholder="我学习汉语。" />
+            <button type="button" id="suggest-sentence-btn" class="suggest-btn">
+              💡 پیشنهاد هوشمند جمله
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label>تلفظ جمله (پینیین):</label>
+            <input
+              type="text"
+              id="input-sentence-pinyin"
+              placeholder="Wǒ xuéxí Hànyǔ."
+            />
+          </div>
+
+          <div class="form-group">
+            <label>معنی جمله فارسی:</label>
+            <input
+              type="text"
+              id="input-sentence-meaning"
+              placeholder="من زبان چینی یاد می‌گیرم."
+            />
+          </div>
+
+          <!-- Tags Section -->
+          <div class="form-group">
+            <label>🏷️ دسته‌بندی‌ها:</label>
+
+            <!-- Predefined tags -->
+            <div class="tags-suggestions" id="tags-suggestions">
+              <button type="button" class="tag-suggestion" data-tag="خانواده">
+                خانواده
+              </button>
+              <button type="button" class="tag-suggestion" data-tag="غذا">
+                غذا
+              </button>
+              <button type="button" class="tag-suggestion" data-tag="حیوانات">
+                حیوانات
+              </button>
+              <button
+                type="button"
+                class="tag-suggestion"
+                data-tag="احوال‌پرسی"
+              >
+                احوال‌پرسی
+              </button>
+              <button type="button" class="tag-suggestion" data-tag="رنگ‌ها">
+                رنگ‌ها
+              </button>
+              <button type="button" class="tag-suggestion" data-tag="اعداد">
+                اعداد
+              </button>
+              <button type="button" class="tag-suggestion" data-tag="افعال">
+                افعال
+              </button>
+              <button type="button" class="tag-suggestion" data-tag="صفات">
+                صفات
+              </button>
+              <button type="button" class="tag-suggestion" data-tag="مکان‌ها">
+                مکان‌ها
+              </button>
+              <button type="button" class="tag-suggestion" data-tag="زمان">
+                زمان
+              </button>
+            </div>
+
+            <!-- Selected tags display -->
+            <div class="selected-tags" id="selected-tags"></div>
+
+            <!-- Custom tag input -->
+            <div class="custom-tag-input">
+              <input
+                type="text"
+                id="custom-tag-input"
+                placeholder="دسته جدید..."
+              />
+              <button type="button" id="add-custom-tag-btn" class="add-tag-btn">
+                + افزودن
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn" id="form-submit-btn">
+            🐼 ذخیره کارت
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ========== Notepad Modal ========== -->
+    <div class="notepad-overlay" id="notepad-overlay">
+      <div class="notepad-content">
+        <div class="notepad-header">
+          <h3>📝 یادداشت کارت</h3>
+          <button class="notepad-close" id="notepad-close">✕</button>
+        </div>
+
+        <div class="notepad-toolbar">
+          <div class="tool-group">
+            <button class="tool-btn active" id="mode-text" title="تایپ">
+              ⌨️ تایپ
+            </button>
+            <button class="tool-btn" id="mode-draw" title="نقاشی">
+              🎨 نقاشی
+            </button>
+          </div>
+
+          <div class="tool-group" id="text-tools">
+            <select id="font-family" title="فونت">
+              <option value="Vazirmatn, sans-serif">Vazirmatn</option>
+              <option value="'Noto Sans SC', sans-serif">چینی</option>
+              <option value="Arial, sans-serif">Arial</option>
+              <option value="Georgia, serif">Georgia</option>
+            </select>
+            <select id="font-size" title="اندازه">
+              <option value="14">کوچک</option>
+              <option value="18" selected>متوسط</option>
+              <option value="24">بزرگ</option>
+              <option value="32">خیلی بزرگ</option>
+            </select>
+            <input
+              type="color"
+              id="text-color"
+              value="#1a1a1a"
+              title="رنگ متن"
+            />
+          </div>
+
+          <div class="tool-group hidden" id="draw-tools">
+            <input
+              type="color"
+              id="brush-color"
+              value="#dc2626"
+              title="رنگ قلم"
+            />
+            <input
+              type="range"
+              id="brush-size"
+              min="1"
+              max="30"
+              value="5"
+              title="اندازه قلم"
+            />
+            <span class="brush-size-display" id="brush-size-display">5</span>
+            <button class="tool-btn-small" id="eraser-btn" title="پاک‌کن">
+              🧽
+            </button>
+            <button
+              class="tool-btn-small"
+              id="clear-canvas-btn"
+              title="پاک کردن"
+            >
+              🗑️
+            </button>
+          </div>
+
+          <!-- Grid Size Controls -->
+          <div class="tool-group hidden" id="grid-tools">
+            <span class="grid-label">⊞ شبکه:</span>
+            <button class="grid-size-btn" data-grid-size="10" title="کوچک">
+              ◾
+            </button>
+            <button
+              class="grid-size-btn active"
+              data-grid-size="20"
+              title="متوسط"
+            >
+              ◼️
+            </button>
+            <button class="grid-size-btn" data-grid-size="40" title="بزرگ">
+              ⬛
+            </button>
+            <button class="grid-size-btn" data-grid-size="0" title="بدون شبکه">
+              🚫
+            </button>
+          </div>
+
+          <button class="save-note-btn" id="save-note-btn">💾 ذخیره</button>
+        </div>
+
+        <div class="notepad-body">
+          <div class="notepad-text" id="notepad-text">
+            <textarea
+              id="note-textarea"
+              placeholder="اینجا تایپ کنید..."
+            ></textarea>
+          </div>
+          <div class="notepad-canvas hidden" id="notepad-canvas">
+            <canvas id="draw-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="../js/theme.js"></script>
+    <script src="../js/script.js"></script>
+  </body>
+</html>

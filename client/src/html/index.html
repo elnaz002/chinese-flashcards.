@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🐼 Chinese Flashcards - انتخاب سطح</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="../../public/images/panda-logo.png"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=Noto+Sans+SC:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../dist/css/style.css" />
+  </head>
+  <body class="panda-theme">
+    <!-- ========== MAIN HEADER ========== -->
+    <header class="site-header">
+      <div class="site-header-inner">
+        <div class="site-logo">
+          <img src="../../public/images/panda-logo.png" alt="Panda Logo" />
+          <span class="site-logo-text">Chinese Flashcards</span>
+        </div>
+
+        <div class="site-header-actions">
+          <button class="header-btn login-header-btn" id="login-btn">
+            <span>👤</span>
+            <span class="btn-label">ورود</span>
+          </button>
+          <button class="header-btn signup-header-btn" id="signup-btn">
+            <span>✨</span>
+            <span class="btn-label">ثبت‌نام</span>
+          </button>
+          <button
+            class="header-btn theme-header-btn"
+            id="theme-toggle"
+            title="تغییر تم"
+          >
+            <span class="theme-icon">🌙</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="app-container">
+      <header class="main-header">
+        <div class="logo-wrapper">
+          <img
+            src="../../public/images/panda-logo.png"
+            alt="Panda Logo"
+            class="logo-img"
+          />
+          <h1>Chinese Flashcards</h1>
+        </div>
+        <p class="subtitle">🐼 با پاندا چینی یاد بگیر!</p>
+        <p class="description">سطح مورد نظر خود را انتخاب کنید</p>
+      </header>
+
+      <div class="hsk-grid">
+        <a href="hsk.html?level=1" class="hsk-card">
+          <div class="hsk-icon">🐼</div>
+          <span class="hsk-number">1</span>
+          <span class="hsk-title">HSK 1</span>
+          <span class="hsk-desc">مقدماتی</span>
+        </a>
+        <a href="hsk.html?level=2" class="hsk-card">
+          <div class="hsk-icon">🐼</div>
+          <span class="hsk-number">2</span>
+          <span class="hsk-title">HSK 2</span>
+          <span class="hsk-desc">پایه</span>
+        </a>
+        <a href="hsk.html?level=3" class="hsk-card">
+          <div class="hsk-icon">🐼</div>
+          <span class="hsk-number">3</span>
+          <span class="hsk-title">HSK 3</span>
+          <span class="hsk-desc">متوسط</span>
+        </a>
+        <a href="hsk.html?level=4" class="hsk-card">
+          <div class="hsk-icon">🐼</div>
+          <span class="hsk-number">4</span>
+          <span class="hsk-title">HSK 4</span>
+          <span class="hsk-desc">متوسط بالا</span>
+        </a>
+      </div>
+
+      <!-- Animated GIF Banner -->
+      <div class="animated-banner">
+        <img
+          style="width: 100%; object-fit: fill"
+          src="../../public/images/panda-animation.gif"
+          alt="Panda Animation"
+          onerror="this.parentElement.style.display = 'none'"
+        />
+      </div>
+
+      <footer class="main-footer">
+        <p>ساخته شده با ❤️ و 🐼</p>
+      </footer>
+    </div>
+
+    <script src="../js/theme.js"></script>
+    <script src="../js/script.js"></script>
+  </body>
+</html>

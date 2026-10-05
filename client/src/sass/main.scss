@@ -1,0 +1,31 @@
+// ============================================
+// Chinese Flashcards - Main SASS File
+// ============================================
+
+// 1. Utilities
+@use "utilities/variables" as *;
+@use "utilities/mixins" as *;
+
+// 2. Base
+@use "base/reset";
+@use "base/typography";
+@use "base/global";
+
+// 3. Components
+@use "components/buttons";
+@use "components/inputs";
+@use "components/modal";
+@use "components/flashcard";
+@use "components/gallery";
+@use "components/notepad";
+@use "components/quiz";
+@use "components/search-filter"; // 🆕
+@use "components/tags"; // 🆕
+@use "components/stats"; // 🆕
+
+// 4. Layout
+@use "layout/header";
+@use "layout/hsk-grid";
+
+// 5. Themes
+@use "themes/dark";
