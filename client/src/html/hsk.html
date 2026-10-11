@@ -21,12 +21,22 @@
       <span class="theme-icon">🌙</span>
     </button>
 
+    <!-- User Status Button -->
+    <button class="user-status-btn" id="user-status-btn" title="حساب کاربری">
+      <span id="user-status-icon">👤</span>
+    </button>
+
     <div class="app-container">
       <!-- Header -->
       <header class="flashcard-header">
         <a href="index.html" class="back-btn">← بازگشت</a>
         <h2>🐼 HSK <span id="level-display">1</span> - کارت‌های من</h2>
-        <button id="add-card-btn" class="add-btn">+ افزودن کارت</button>
+        <div style="display: flex; gap: 8px">
+          <a href="stats.html" class="add-btn" style="text-decoration: none"
+            >📊 آمار</a
+          >
+          <button id="add-card-btn" class="add-btn">+ افزودن کارت</button>
+        </div>
       </header>
 
       <!-- Stats Bar -->
@@ -56,7 +66,6 @@
 
       <!-- Search & Filter Bar -->
       <div class="search-filter-bar">
-        <!-- Search Box -->
         <div class="search-box">
           <span class="search-icon">🔍</span>
           <input
@@ -73,13 +82,10 @@
           </button>
         </div>
 
-        <!-- Filter Dropdown -->
         <select id="tag-filter" class="tag-filter-select">
           <option value="all">🏷️ همه دسته‌ها</option>
-          <!-- Tags will be added here dynamically -->
         </select>
 
-        <!-- View Mode Toggle -->
         <div class="view-toggle">
           <button class="view-btn active" id="view-all" title="همه">▦</button>
           <button class="view-btn" id="view-favorites" title="محبوب‌ها">
@@ -126,7 +132,6 @@
       <div class="modal-content">
         <button class="close-modal" id="close-modal">✕</button>
 
-        <!-- Tags Display -->
         <div class="card-tags-display" id="card-tags-display"></div>
 
         <div class="flashcard-wrapper">
@@ -277,11 +282,9 @@
             />
           </div>
 
-          <!-- Tags Section -->
           <div class="form-group">
             <label>🏷️ دسته‌بندی‌ها:</label>
 
-            <!-- Predefined tags -->
             <div class="tags-suggestions" id="tags-suggestions">
               <button type="button" class="tag-suggestion" data-tag="خانواده">
                 خانواده
@@ -319,10 +322,8 @@
               </button>
             </div>
 
-            <!-- Selected tags display -->
             <div class="selected-tags" id="selected-tags"></div>
 
-            <!-- Custom tag input -->
             <div class="custom-tag-input">
               <input
                 type="text"
@@ -409,7 +410,6 @@
             </button>
           </div>
 
-          <!-- Grid Size Controls -->
           <div class="tool-group hidden" id="grid-tools">
             <span class="grid-label">⊞ شبکه:</span>
             <button class="grid-size-btn" data-grid-size="10" title="کوچک">
@@ -450,6 +450,15 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
+    <!-- Scripts (order matters!) -->
+    <script src="../js/utils/config.js"></script>
+    <script src="../js/utils/storage.js"></script>
+    <script src="../js/api/apiClient.js"></script>
+    <script src="../js/api/auth.js"></script>
+    <script src="../js/api/cards.js"></script>
+    <script src="../js/api/cardStore.js"></script>
+    <script src="../js/api/notes.js"></script>
+    <script src="../js/api/noteStore.js"></script>
     <script src="../js/theme.js"></script>
     <script src="../js/script.js"></script>
   </body>

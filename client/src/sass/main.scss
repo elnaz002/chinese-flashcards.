@@ -19,13 +19,19 @@
 @use "components/gallery";
 @use "components/notepad";
 @use "components/quiz";
-@use "components/search-filter"; // 🆕
-@use "components/tags"; // 🆕
-@use "components/stats"; // 🆕
+@use "components/search-filter";
+@use "components/tags";
+@use "components/stats" as stats-bar;
 
 // 4. Layout
 @use "layout/header";
 @use "layout/hsk-grid";
 
-// 5. Themes
+// 5. Pages
+@use "pages/index";
+@use "pages/hsk";
+@use "pages/auth";
+@use "pages/stats" as stats-page;
+
+// 6. Themes
 @use "themes/dark";

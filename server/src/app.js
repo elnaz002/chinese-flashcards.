@@ -1,111 +1,108 @@
 /* ============================================================
-   Express Application
+   Express Application (Final)
    ============================================================ */
 
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
+const morgan = require("morgan");
+const compression = require("compression");
+
 const config = require("./config/env");
+const { BODY_LIMITS } = require("./config/constants");
+const { globalLimiter } = require("./middlewares/rateLimiter");
+const {
+  notFoundHandler,
+  globalErrorHandler,
+} = require("./middlewares/errorHandler");
 
 const app = express();
 
-// Middlewares
+// ============================================================
+// 1. Security & Performance Middlewares
+// ============================================================
 app.use(
-  cors({
-    origin: config.CLIENT_URL,
-    credentials: true,
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
   }),
 );
 
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(compression());
 
-// Request logger (dev)
+// ============================================================
+// 2. CORS
+// ============================================================
+const allowedOrigins = [
+  config.CLIENT_URL,
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "http://localhost:5500",
+  "http://127.0.0.1:5500",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like Postman, mobile apps)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
+
+// ============================================================
+// 3. Body Parsers
+// ============================================================
+app.use(express.json({ limit: BODY_LIMITS.JSON }));
+app.use(express.urlencoded({ extended: true, limit: BODY_LIMITS.URLENCODED }));
+
+// ============================================================
+// 4. Request Logger
+// ============================================================
 if (config.NODE_ENV === "development") {
-  app.use((req, res, next) => {
-    console.log(`📨 ${req.method} ${req.path}`);
-    next();
-  });
+  app.use(morgan("dev"));
+} else {
+  app.use(morgan("combined"));
 }
 
-// Health Check
+// ============================================================
+// 5. Rate Limiting (global)
+// ============================================================
+app.use("/api", globalLimiter);
+
+// ============================================================
+// 6. Health Check
+// ============================================================
 app.get("/api/health", (req, res) => {
   res.json({
     status: "OK",
     message: "Chinese Flashcards API is running! 🐼",
     timestamp: new Date().toISOString(),
     environment: config.NODE_ENV,
+    uptime: Math.round(process.uptime()),
   });
 });
 
 // ============================================================
-// TEST Routes (remove in production)
+// 7. API Routes
 // ============================================================
-if (config.NODE_ENV === "development") {
-  const { User, Card, Note, QuizResult } = require("./models");
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/cards", require("./routes/cardRoutes"));
+app.use("/api/notes", require("./routes/noteRoutes"));
+app.use("/api/quiz", require("./routes/quizRoutes"));
 
-  // Test: list all model names
-  app.get("/api/test/models", (req, res) => {
-    res.json({
-      success: true,
-      models: {
-        User: User.modelName,
-        Card: Card.modelName,
-        Note: Note.modelName,
-        QuizResult: QuizResult.modelName,
-      },
-    });
-  });
-
-  // Test: create a fake user (for testing only)
-  app.get("/api/test/create-user", async (req, res) => {
-    try {
-      const testUser = new User({
-        username: "testuser_" + Date.now(),
-        email: `test_${Date.now()}@example.com`,
-        password: "password123",
-      });
-
-      await testUser.save();
-
-      res.json({
-        success: true,
-        message: "Test user created!",
-        user: testUser,
-      });
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  });
-
-  // Test: count users
-  app.get("/api/test/count-users", async (req, res) => {
-    try {
-      const count = await User.countDocuments();
-      res.json({ success: true, count });
-    } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
-    }
-  });
-}
-
-// 404 Handler
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: `Route not found: ${req.method} ${req.path}`,
-  });
-});
-
-// Error Handler
-app.use((err, req, res, next) => {
-  console.error("❌ Error:", err);
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || "Internal server error",
-  });
-});
+// ============================================================
+// 8. 404 + Error Handlers (must be last)
+// ============================================================
+app.use(notFoundHandler);
+app.use(globalErrorHandler);
 
 module.exports = app;

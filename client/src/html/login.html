@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🐼 ورود / ثبت‌نام - Chinese Flashcards</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="../../public/images/panda-logo.png"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=Noto+Sans+SC:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../dist/css/style.css" />
+  </head>
+  <body class="panda-theme auth-page">
+    <!-- Theme Toggle (Floating) -->
+    <button class="theme-toggle" id="theme-toggle" title="تغییر تم">
+      <span class="theme-icon">🌙</span>
+    </button>
+
+    <!-- Panda Hero Background -->
+    <div class="auth-bg-decoration">
+      <div class="panda-bg-1">🐼</div>
+      <div class="panda-bg-2">🎋</div>
+      <div class="panda-bg-3">🐼</div>
+    </div>
+
+    <!-- Main Auth Container -->
+    <div class="auth-container">
+      <!-- Logo & Title -->
+      <div class="auth-header">
+        <img
+          src="../../public/images/panda-logo.png"
+          alt="Panda Logo"
+          class="auth-logo"
+        />
+        <h1>Chinese Flashcards</h1>
+        <p class="auth-subtitle">🐼 خوش آمدید!</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login">ورود</button>
+        <button class="auth-tab" id="tab-register">ثبت‌نام</button>
+        <div class="auth-tab-indicator" id="tab-indicator"></div>
+      </div>
+
+      <!-- ==================== Login Form ==================== -->
+      <form class="auth-form active" id="login-form" autocomplete="on">
+        <div class="form-group">
+          <label for="login-email">ایمیل</label>
+          <div class="input-wrapper">
+            <span class="input-icon">📧</span>
+            <input
+              type="email"
+              id="login-email"
+              placeholder="example@email.com"
+              autocomplete="email"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="login-password">رمز عبور</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input
+              type="password"
+              id="login-password"
+              placeholder="••••••••"
+              autocomplete="current-password"
+              required
+            />
+            <button
+              type="button"
+              class="toggle-password"
+              data-target="login-password"
+            >
+              👁️
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="auth-submit-btn" id="login-submit">
+          <span class="btn-text">ورود به حساب</span>
+          <span class="btn-loader hidden">⏳ در حال ورود...</span>
+        </button>
+
+        <p class="auth-hint">
+          حساب ندارید؟
+          <a href="#" id="switch-to-register">ثبت‌نام کنید</a>
+        </p>
+      </form>
+
+      <!-- ==================== Register Form ==================== -->
+      <form class="auth-form" id="register-form" autocomplete="on">
+        <div class="form-group">
+          <label for="register-username">نام کاربری</label>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input
+              type="text"
+              id="register-username"
+              placeholder="ali_ahmadi"
+              autocomplete="username"
+              minlength="3"
+              maxlength="30"
+              pattern="[a-zA-Z0-9_]+"
+              title="فقط حروف انگلیسی، اعداد و _"
+              required
+            />
+          </div>
+          <p class="field-hint">فقط حروف، اعداد و _ (حداقل ۳ کاراکتر)</p>
+        </div>
+
+        <div class="form-group">
+          <label for="register-email">ایمیل</label>
+          <div class="input-wrapper">
+            <span class="input-icon">📧</span>
+            <input
+              type="email"
+              id="register-email"
+              placeholder="example@email.com"
+              autocomplete="email"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="register-password">رمز عبور</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input
+              type="password"
+              id="register-password"
+              placeholder="حداقل ۶ کاراکتر"
+              autocomplete="new-password"
+              minlength="6"
+              required
+            />
+            <button
+              type="button"
+              class="toggle-password"
+              data-target="register-password"
+            >
+              👁️
+            </button>
+          </div>
+          <div class="password-strength" id="password-strength">
+            <div class="strength-bar"></div>
+            <div class="strength-bar"></div>
+            <div class="strength-bar"></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="register-confirm">تکرار رمز عبور</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input
+              type="password"
+              id="register-confirm"
+              placeholder="رمز عبور را دوباره وارد کنید"
+              autocomplete="new-password"
+              required
+            />
+          </div>
+        </div>
+
+        <button type="submit" class="auth-submit-btn" id="register-submit">
+          <span class="btn-text">ایجاد حساب</span>
+          <span class="btn-loader hidden">⏳ در حال ثبت‌نام...</span>
+        </button>
+
+        <p class="auth-hint">
+          حساب دارید؟
+          <a href="#" id="switch-to-login">وارد شوید</a>
+        </p>
+      </form>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Scripts -->
+    <script src="../js/utils/config.js"></script>
+    <script src="../js/utils/storage.js"></script>
+    <script src="../js/api/apiClient.js"></script>
+    <script src="../js/api/auth.js"></script>
+    <script src="../js/theme.js"></script>
+    <script src="../js/auth-page.js"></script>
+  </body>
+</html>

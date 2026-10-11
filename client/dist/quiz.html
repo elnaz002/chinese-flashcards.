@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🎯 آزمون - Chinese Flashcards</title>
+    <link rel="icon" type="image/png" href="../public/images/panda-logo.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=Noto+Sans+SC:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body class="panda-theme">
+    <div class="app-container quiz-container">
+      <!-- ========== SETUP SCREEN ========== -->
+      <div class="quiz-setup" id="quiz-setup">
+        <header class="quiz-header">
+          <a href="hsk.html?level=1" class="back-btn" id="quiz-back-btn"
+            >← بازگشت</a
+          >
+          <h2>🎯 شروع آزمون</h2>
+          <div style="width: 100px"></div>
+        </header>
+
+        <div
+          class="not-enough-cards"
+          id="not-enough-cards"
+          style="display: none"
+        >
+          <div class="warning-icon">⚠️</div>
+          <h3>کارت کافی ندارید!</h3>
+          <p>برای شرکت در آزمون حداقل به ۴ کارت نیاز دارید.</p>
+          <a href="hsk.html?level=1" class="back-to-hsk-btn"
+            >بازگشت به کارت‌ها</a
+          >
+        </div>
+
+        <div class="quiz-options" id="quiz-options">
+          <div class="setup-section">
+            <h3>1️⃣ حالت آزمون را انتخاب کنید:</h3>
+            <div class="mode-grid">
+              <label class="mode-card" data-mode="listening">
+                <input
+                  type="radio"
+                  name="quiz-mode"
+                  value="listening"
+                  checked
+                />
+                <div class="mode-content">
+                  <span class="mode-icon">🎧</span>
+                  <span class="mode-title">شنیداری</span>
+                  <span class="mode-desc"
+                    >صدا پخش می‌شود، کاراکتر را انتخاب کنید</span
+                  >
+                </div>
+              </label>
+
+              <label class="mode-card" data-mode="char-to-meaning">
+                <input type="radio" name="quiz-mode" value="char-to-meaning" />
+                <div class="mode-content">
+                  <span class="mode-icon">🀄</span>
+                  <span class="mode-title">کاراکتر → معنی</span>
+                  <span class="mode-desc"
+                    >کاراکتر را می‌بینید، معنی را انتخاب کنید</span
+                  >
+                </div>
+              </label>
+
+              <label class="mode-card" data-mode="meaning-to-char">
+                <input type="radio" name="quiz-mode" value="meaning-to-char" />
+                <div class="mode-content">
+                  <span class="mode-icon">📝</span>
+                  <span class="mode-title">معنی → کاراکتر</span>
+                  <span class="mode-desc"
+                    >معنی را می‌بینید، کاراکتر را انتخاب کنید</span
+                  >
+                </div>
+              </label>
+
+              <label class="mode-card" data-mode="char-to-pinyin">
+                <input type="radio" name="quiz-mode" value="char-to-pinyin" />
+                <div class="mode-content">
+                  <span class="mode-icon">🔤</span>
+                  <span class="mode-title">کاراکتر → پینیین</span>
+                  <span class="mode-desc"
+                    >کاراکتر را می‌بینید، تلفظ را انتخاب کنید</span
+                  >
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="setup-section">
+            <h3>2️⃣ تعداد سوالات:</h3>
+            <div class="count-options">
+              <label class="count-card">
+                <input type="radio" name="quiz-count" value="5" />
+                <span>۵ سوال</span>
+              </label>
+              <label class="count-card">
+                <input type="radio" name="quiz-count" value="10" checked />
+                <span>۱۰ سوال</span>
+              </label>
+              <label class="count-card">
+                <input type="radio" name="quiz-count" value="20" />
+                <span>۲۰ سوال</span>
+              </label>
+              <label class="count-card">
+                <input type="radio" name="quiz-count" value="all" />
+                <span>همه کارت‌ها</span>
+              </label>
+            </div>
+          </div>
+
+          <button class="start-quiz-final-btn" id="start-quiz-final-btn">
+            🚀 شروع آزمون
+          </button>
+        </div>
+      </div>
+
+      <!-- ========== QUIZ SCREEN ========== -->
+      <div class="quiz-play" id="quiz-play" style="display: none">
+        <!-- Top Action Bar -->
+        <div class="quiz-top-bar">
+          <button
+            class="quiz-exit-btn"
+            id="quiz-exit-btn"
+            title="خروج از آزمون"
+          >
+            ✕ خروج
+          </button>
+          <div class="quiz-top-info">
+            <span class="mode-badge" id="mode-badge">🎧 شنیداری</span>
+          </div>
+          <button
+            class="quiz-finish-btn"
+            id="quiz-finish-btn"
+            title="پایان و مشاهده نتایج"
+          >
+            ⏹ پایان آزمون
+          </button>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="quiz-progress-bar">
+          <div class="progress-info">
+            <span id="progress-text">سوال 1 از 10</span>
+            <span id="score-text">امتیاز: 0</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+        </div>
+
+        <!-- Question Area -->
+        <div class="question-area" id="question-area"></div>
+
+        <!-- Answers Grid -->
+        <div class="answers-grid" id="answers-grid"></div>
+      </div>
+
+      <!-- ========== RESULT SCREEN ========== -->
+      <div class="quiz-result" id="quiz-result" style="display: none">
+        <div class="result-header">
+          <div class="result-emoji" id="result-emoji">🎉</div>
+          <h2 id="result-title">عالی بود!</h2>
+          <p class="result-score" id="result-score">امتیاز شما: 8 از 10</p>
+          <p class="result-percentage" id="result-percentage">80%</p>
+          <p class="result-note" id="result-note"></p>
+        </div>
+
+        <div class="result-actions">
+          <button class="retry-btn" id="retry-btn">🔄 آزمون مجدد</button>
+          <a
+            href="hsk.html?level=1"
+            class="back-to-hsk-btn"
+            id="result-back-btn"
+            >🏠 بازگشت به کارت‌ها</a
+          >
+        </div>
+
+        <div
+          class="wrong-answers-section"
+          id="wrong-answers-section"
+          style="display: none"
+        >
+          <h3>📚 کارت‌هایی که اشتباه زدید:</h3>
+          <div class="wrong-answers-list" id="wrong-answers-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- Scripts (order matters!) -->
+    <script src="./js/utils/config.js"></script>
+    <script src="./js/utils/storage.js"></script>
+    <script src="./js/api/apiClient.js"></script>
+    <script src="./js/api/auth.js"></script>
+    <script src="./js/api/cards.js"></script>
+    <script src="./js/api/cardStore.js"></script>
+    <script src="./js/api/quiz.js"></script>
+    <script src="./js/api/quizStore.js"></script>
+    <script src="./js/theme.js"></script>
+    <script src="./js/quiz.js"></script>
+  </body>
+</html>

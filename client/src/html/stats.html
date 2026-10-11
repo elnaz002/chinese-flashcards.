@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>📊 آمار و پیشرفت - Chinese Flashcards</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="../../public/images/panda-logo.png"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=Noto+Sans+SC:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../dist/css/style.css" />
+  </head>
+  <body class="panda-theme">
+    <button class="theme-toggle" id="theme-toggle" title="تغییر تم">
+      <span class="theme-icon">🌙</span>
+    </button>
+
+    <div class="app-container">
+      <header class="flashcard-header">
+        <a href="index.html" class="back-btn">← بازگشت</a>
+        <h2>📊 آمار و پیشرفت</h2>
+        <div style="width: 80px"></div>
+      </header>
+
+      <!-- Loading -->
+      <div class="stats-loading" id="stats-loading">
+        <div class="loader-spinner">🐼</div>
+        <p>در حال بارگذاری آمار...</p>
+      </div>
+
+      <!-- Stats Content -->
+      <div class="stats-content" id="stats-content" style="display: none">
+        <!-- Overall Stats Grid -->
+        <div class="overall-stats-grid">
+          <div class="overall-stat-card">
+            <div class="stat-emoji">🎯</div>
+            <div class="stat-value" id="stat-total-quizzes">0</div>
+            <div class="stat-label">آزمون‌ها</div>
+          </div>
+          <div class="overall-stat-card">
+            <div class="stat-emoji">✅</div>
+            <div class="stat-value" id="stat-average">0%</div>
+            <div class="stat-label">میانگین امتیاز</div>
+          </div>
+          <div class="overall-stat-card">
+            <div class="stat-emoji">🏆</div>
+            <div class="stat-value" id="stat-best">0%</div>
+            <div class="stat-label">بهترین امتیاز</div>
+          </div>
+          <div class="overall-stat-card">
+            <div class="stat-emoji">📚</div>
+            <div class="stat-value" id="stat-questions">0</div>
+            <div class="stat-label">کل سوالات</div>
+          </div>
+        </div>
+
+        <!-- Progress by Level -->
+        <div class="stats-section">
+          <h3>📈 پیشرفت بر اساس سطح HSK</h3>
+          <div class="level-stats" id="level-stats"></div>
+        </div>
+
+        <!-- Wrong Cards for Review -->
+        <div class="stats-section">
+          <h3>🔁 کارت‌هایی که نیاز به مرور دارند</h3>
+          <div class="wrong-cards-list" id="wrong-cards-list">
+            <p class="no-data">هنوز کارت اشتباهی ثبت نشده!</p>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="stats-section">
+          <h3>🔥 فعالیت هفته گذشته</h3>
+          <div class="recent-activity">
+            <div class="activity-number" id="recent-count">0</div>
+            <div class="activity-label">آزمون در ۷ روز گذشته</div>
+          </div>
+        </div>
+
+        <!-- Recent Quizzes -->
+        <div class="stats-section">
+          <h3>📜 آخرین آزمون‌ها</h3>
+          <div class="recent-quizzes-list" id="recent-quizzes-list"></div>
+        </div>
+
+        <!-- Reset Button -->
+        <div class="stats-section danger-zone">
+          <h3>⚠️ منطقه خطر</h3>
+          <p>پاک کردن همه نتایج آزمون‌ها (غیرقابل بازگشت)</p>
+          <button class="reset-stats-btn" id="reset-stats-btn">
+            🗑️ پاک کردن همه نتایج
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="../js/utils/config.js"></script>
+    <script src="../js/utils/storage.js"></script>
+    <script src="../js/api/apiClient.js"></script>
+    <script src="../js/api/auth.js"></script>
+    <script src="../js/api/quiz.js"></script>
+    <script src="../js/api/quizStore.js"></script>
+    <script src="../js/theme.js"></script>
+    <script src="../js/stats-page.js"></script>
+  </body>
+</html>

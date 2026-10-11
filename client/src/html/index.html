@@ -85,10 +85,8 @@
         </a>
       </div>
 
-      <!-- Animated GIF Banner -->
       <div class="animated-banner">
         <img
-          style="width: 100%; object-fit: fill"
           src="../../public/images/panda-animation.gif"
           alt="Panda Animation"
           onerror="this.parentElement.style.display = 'none'"
@@ -100,6 +98,11 @@
       </footer>
     </div>
 
+    <!-- Scripts (order matters!) -->
+    <script src="../js/utils/config.js"></script>
+    <script src="../js/utils/storage.js"></script>
+    <script src="../js/api/apiClient.js"></script>
+    <script src="../js/api/auth.js"></script>
     <script src="../js/theme.js"></script>
     <script src="../js/script.js"></script>
   </body>

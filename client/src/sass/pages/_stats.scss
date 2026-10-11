@@ -1,0 +1,377 @@
+// ============================================
+// Stats Page
+// ============================================
+
+@use "../utilities/variables" as *;
+@use "../utilities/mixins" as *;
+
+.stats-loading {
+  text-align: center;
+  padding: 80px 20px;
+
+  .loader-spinner {
+    font-size: 4rem;
+    animation: bounce 1s infinite;
+  }
+
+  p {
+    font-size: 1.1rem;
+    color: $text-light;
+    margin-top: 15px;
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+.stats-content {
+  animation: fadeIn 0.4s ease;
+}
+
+// Overall Stats Grid
+.overall-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.overall-stat-card {
+  background: white;
+  padding: 20px;
+  border-radius: $border-radius;
+  text-align: center;
+  box-shadow: $shadow-sm;
+  border: 2px solid rgba(74, 222, 128, 0.15);
+  transition: all $transition-base;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow;
+    border-color: $bamboo-green;
+  }
+
+  @include dark-mode {
+    background: $dark-card-bg;
+    border-color: $dark-border-color;
+  }
+
+  .stat-emoji {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: $bamboo-dark;
+    margin-bottom: 5px;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: $text-light;
+    font-weight: 500;
+  }
+}
+
+// Stats Sections
+.stats-section {
+  background: white;
+  border-radius: $border-radius;
+  padding: 25px;
+  margin-bottom: 20px;
+  box-shadow: $shadow-sm;
+  border: 2px solid rgba(74, 222, 128, 0.1);
+
+  @include dark-mode {
+    background: $dark-card-bg;
+    border-color: $dark-border-color;
+  }
+
+  h3 {
+    color: $bamboo-dark;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .no-data {
+    text-align: center;
+    padding: 30px;
+    color: $text-light;
+    font-style: italic;
+
+    &.small {
+      font-size: 0.85rem;
+      padding: 15px;
+    }
+  }
+}
+
+// Level Stats
+.level-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.level-stat-row {
+  display: grid;
+  grid-template-columns: 70px 1fr 120px;
+  align-items: center;
+  gap: 15px;
+
+  .level-label {
+    font-weight: 700;
+    color: $bamboo-dark;
+    font-size: 0.95rem;
+  }
+
+  .level-bar-wrapper {
+    height: 20px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+
+    @include dark-mode {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  .level-bar {
+    height: 100%;
+    background: linear-gradient(90deg, $bamboo-green, $bamboo-dark);
+    border-radius: 10px;
+    transition: width 0.6s ease;
+  }
+
+  .level-info {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    font-size: 0.9rem;
+
+    .level-percentage {
+      font-weight: 700;
+      color: $bamboo-dark;
+    }
+
+    .level-detail {
+      color: $text-light;
+      font-size: 0.8rem;
+    }
+  }
+
+  @include responsive(mobile) {
+    grid-template-columns: 1fr;
+    gap: 8px;
+
+    .level-info {
+      justify-content: flex-start;
+    }
+  }
+}
+
+// Wrong Cards
+.wrong-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wrong-card-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: #fef2f2;
+  border-radius: $border-radius-sm;
+  border-right: 4px solid $chinese-red;
+
+  @include dark-mode {
+    background: rgba(220, 38, 38, 0.1);
+  }
+
+  .wrong-card-char {
+    font-family: $font-chinese;
+    font-size: 2rem;
+    font-weight: 700;
+    color: $bamboo-dark;
+    min-width: 50px;
+    text-align: center;
+  }
+
+  .wrong-card-info {
+    flex: 1;
+
+    .wrong-card-pinyin {
+      font-size: 0.9rem;
+      color: $primary-blue;
+      font-weight: 600;
+    }
+
+    .wrong-card-meaning {
+      font-size: 0.95rem;
+      color: $text-color;
+      font-weight: 600;
+    }
+  }
+
+  .wrong-card-count {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: $chinese-red;
+    padding: 5px 12px;
+    background: white;
+    border-radius: 15px;
+
+    @include dark-mode {
+      background: rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+// Recent Activity
+.recent-activity {
+  text-align: center;
+  padding: 20px;
+
+  .activity-number {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: $bamboo-green;
+    line-height: 1;
+  }
+
+  .activity-label {
+    font-size: 0.95rem;
+    color: $text-light;
+    margin-top: 8px;
+  }
+}
+
+// Recent Quizzes
+.recent-quizzes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recent-quiz-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: #f8fafc;
+  border-radius: $border-radius-sm;
+  border-right: 4px solid $bamboo-green;
+
+  @include dark-mode {
+    background: rgba(30, 41, 59, 0.5);
+  }
+
+  .recent-quiz-header {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+
+    .recent-quiz-mode {
+      font-weight: 700;
+      color: $bamboo-dark;
+      font-size: 0.95rem;
+    }
+
+    .recent-quiz-level {
+      font-size: 0.8rem;
+      color: $text-light;
+    }
+  }
+
+  .recent-quiz-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .score-good {
+      color: $bamboo-green;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+    .score-medium {
+      color: $chinese-gold;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+    .score-bad {
+      color: $chinese-red;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .recent-quiz-detail {
+      font-size: 0.75rem;
+      color: $text-light;
+    }
+  }
+
+  .recent-quiz-date {
+    font-size: 0.8rem;
+    color: $text-light;
+  }
+
+  @include responsive(mobile) {
+    grid-template-columns: 1fr;
+    text-align: right;
+  }
+}
+
+// Danger Zone
+.danger-zone {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: #fef2f2;
+
+  @include dark-mode {
+    background: rgba(220, 38, 38, 0.1);
+  }
+
+  h3 {
+    color: $chinese-red;
+  }
+
+  p {
+    color: $text-light;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+  }
+}
+
+.reset-stats-btn {
+  padding: 12px 25px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  border-radius: $border-radius-sm;
+  font-family: $font-fa;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all $transition-base;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(239, 68, 68, 0.5);
+  }
+}

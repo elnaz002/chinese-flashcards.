@@ -1,7 +1,7 @@
 /* ============================================================
    QuizResult Model
    ============================================================
-   Represents a completed quiz session.
+   Stores the result of a completed quiz session.
    ============================================================ */
 
 const mongoose = require("mongoose");
@@ -40,14 +40,18 @@ const quizResultSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
-    wrongCardIds: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "Card",
-      default: [],
-    },
+    // Cards answered incorrectly (for later review)
+    wrongCardIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Card",
+      },
+    ],
+    // Time spent in seconds
     durationInSeconds: {
       type: Number,
       default: 0,
+      min: 0,
     },
   },
   {
@@ -63,12 +67,16 @@ quizResultSchema.virtual("scorePercentage").get(function () {
   return Math.round((this.correctAnswers / this.totalQuestions) * 100);
 });
 
-// Ensure virtuals are included in JSON output
+// ============================================================
+// JSON output includes virtuals
+// ============================================================
 quizResultSchema.set("toJSON", { virtuals: true });
+quizResultSchema.set("toObject", { virtuals: true });
 
 // ============================================================
 // Indexes
 // ============================================================
 quizResultSchema.index({ userId: 1, createdAt: -1 });
+quizResultSchema.index({ userId: 1, hskLevel: 1 });
 
 module.exports = mongoose.model("QuizResult", quizResultSchema);

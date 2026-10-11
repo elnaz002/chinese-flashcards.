@@ -1,7 +1,8 @@
 /* ============================================================
-   Chinese Flashcards App - Main Script (Final)
+   Chinese Flashcards App - Main Script (Final v2)
    Features: Add/Edit/Delete, Flip, TTS, Notepad, Grid Size,
              Quiz Launcher, Tags, Search, Filter, Stats, Favorites
+   Backend: Hybrid Local + Server (CardStore + NoteStore)
    ============================================================ */
 
 /* ============================================================
@@ -13,28 +14,12 @@ let selectedImageBase64 = "";
 let editingCardId = null;
 let currentSearchQuery = "";
 let currentTagFilter = "all";
-let currentViewMode = "all"; // 'all' or 'favorites'
+let currentViewMode = "all";
 
-// Tag management (in Add/Edit form)
 let formSelectedTags = [];
 
 const LEVEL = new URLSearchParams(window.location.search).get("level") || "1";
-const STORAGE_KEY = `flashcards_hsk_${LEVEL}`;
 const PLACEHOLDER_IMG = "../public/images/placeholder.png";
-const NOTE_STORAGE_PREFIX = "flashcard_note_";
-
-const PREDEFINED_TAGS = [
-  "خانواده",
-  "غذا",
-  "حیوانات",
-  "احوال‌پرسی",
-  "رنگ‌ها",
-  "اعداد",
-  "افعال",
-  "صفات",
-  "مکان‌ها",
-  "زمان",
-];
 
 // Notepad state
 let currentNoteCardId = null;
@@ -64,36 +49,29 @@ const imageFileInput = document.getElementById("input-image-file");
 const imagePreview = document.getElementById("image-preview");
 const suggestSentenceBtn = document.getElementById("suggest-sentence-btn");
 
-// Search & Filter
 const searchInput = document.getElementById("search-input");
 const clearSearchBtn = document.getElementById("clear-search-btn");
 const tagFilterSelect = document.getElementById("tag-filter");
 const viewAllBtn = document.getElementById("view-all");
 const viewFavoritesBtn = document.getElementById("view-favorites");
 
-// Stats
 const statTotal = document.getElementById("stat-total");
 const statTags = document.getElementById("stat-tags");
 const statFiltered = document.getElementById("stat-filtered");
 
-// Tags in form
 const tagsSuggestions = document.getElementById("tags-suggestions");
 const selectedTagsContainer = document.getElementById("selected-tags");
 const customTagInput = document.getElementById("custom-tag-input");
 const addCustomTagBtn = document.getElementById("add-custom-tag-btn");
 
-// Tags display in modal
 const cardTagsDisplay = document.getElementById("card-tags-display");
 
-// Quiz
 const startQuizBtn = document.getElementById("start-quiz-btn");
 const cardCountBadge = document.getElementById("card-count-badge");
 
-// Voice
 const voiceIndicator = document.getElementById("voice-indicator");
 const voiceIcon = document.getElementById("voice-icon");
 
-// Modal
 const modalOverlay = document.getElementById("modal-overlay");
 const closeModal = document.getElementById("close-modal");
 const largeFlashcard = document.getElementById("large-flashcard");
@@ -114,12 +92,10 @@ const favoriteCurrentCardBtn = document.getElementById(
   "favorite-current-card-btn",
 );
 
-// Lightbox
 const lightboxOverlay = document.getElementById("lightbox-overlay");
 const lightboxImage = document.getElementById("lightbox-image");
 const lightboxClose = document.getElementById("lightbox-close");
 
-// Notepad
 const openNoteBtn = document.getElementById("open-note-btn");
 const notepadOverlay = document.getElementById("notepad-overlay");
 const notepadClose = document.getElementById("notepad-close");
@@ -143,7 +119,6 @@ const clearCanvasBtn = document.getElementById("clear-canvas-btn");
 const gridSizeBtns = document.querySelectorAll(".grid-size-btn");
 const saveNoteBtn = document.getElementById("save-note-btn");
 
-// Toast
 const toastEl = document.getElementById("toast");
 
 if (levelDisplay) levelDisplay.textContent = LEVEL;
@@ -160,19 +135,61 @@ function showToast(message, isError = false) {
 }
 
 /* ============================================================
-   4. LOGIN / SIGNUP PLACEHOLDER
+   4. AUTH UI
    ============================================================ */
-const loginBtn = document.getElementById("login-btn");
-const signupBtn = document.getElementById("signup-btn");
+function setupAuthUI() {
+  const loginBtn = document.getElementById("login-btn");
+  const signupBtn = document.getElementById("signup-btn");
+  const userStatusBtn = document.getElementById("user-status-btn");
+  const userStatusIcon = document.getElementById("user-status-icon");
 
-if (loginBtn)
-  loginBtn.addEventListener("click", () =>
-    showToast("🔐 قابلیت ورود به زودی!"),
-  );
-if (signupBtn)
-  signupBtn.addEventListener("click", () =>
-    showToast("✨ قابلیت ثبت‌نام به زودی!"),
-  );
+  if (typeof AuthAPI === "undefined") return;
+
+  if (AuthAPI.isLoggedIn()) {
+    const user = AuthAPI.getCurrentUser();
+    if (user && loginBtn) {
+      loginBtn.innerHTML = `<span>${user.avatar || "🐼"}</span> <span class="btn-label">${user.username}</span>`;
+      loginBtn.title = "برای خروج کلیک کنید";
+      loginBtn.addEventListener("click", handleLogout);
+    }
+    if (userStatusBtn && userStatusIcon) {
+      userStatusIcon.textContent = user.avatar || "🐼";
+      userStatusBtn.title = `${user.username} - کلیک برای خروج`;
+      userStatusBtn.addEventListener("click", handleLogout);
+    }
+    if (signupBtn) signupBtn.style.display = "none";
+  } else {
+    if (loginBtn) {
+      loginBtn.addEventListener(
+        "click",
+        () => (window.location.href = "login.html"),
+      );
+    }
+    if (signupBtn) {
+      signupBtn.addEventListener(
+        "click",
+        () => (window.location.href = "login.html"),
+      );
+    }
+    if (userStatusBtn) {
+      userStatusBtn.addEventListener(
+        "click",
+        () => (window.location.href = "login.html"),
+      );
+    }
+  }
+}
+
+function handleLogout() {
+  const user = AuthAPI.getCurrentUser();
+  const msg = user
+    ? `می‌خواهید از حساب "${user.username}" خارج شوید؟\n\nکارت‌ها و یادداشت‌های شما روی سرور ذخیره شده‌اند.`
+    : "می‌خواهید خارج شوید؟";
+
+  if (confirm(msg)) {
+    AuthAPI.logout().then(() => window.location.reload());
+  }
+}
 
 /* ============================================================
    5. TEXT-TO-SPEECH
@@ -370,20 +387,20 @@ function suggestSentence() {
 }
 
 /* ============================================================
-   8. LOCAL STORAGE
+   8. LOAD CARDS
    ============================================================ */
-function loadCards() {
-  const stored = localStorage.getItem(STORAGE_KEY);
+async function loadCards() {
   try {
-    allCards = stored ? JSON.parse(stored) : [];
-    // Ensure all cards have tags and favorite properties
-    allCards = allCards.map((c) => ({
+    const rawCards = await CardStore.getAll(LEVEL);
+    allCards = rawCards.map((c) => ({
       ...c,
+      id: c.id || c._id,
       tags: c.tags || [],
       favorite: c.favorite || false,
     }));
   } catch (e) {
-    console.error("Error parsing cards:", e);
+    console.error("Error loading cards:", e);
+    showToast("خطا در بارگذاری کارت‌ها.", true);
     allCards = [];
   }
   updateStats();
@@ -392,28 +409,14 @@ function loadCards() {
   updateCardCount();
 }
 
-function saveCards() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(allCards));
-  } catch (e) {
-    showToast("حافظه پر است. لطفاً کارت‌های قدیمی را حذف کنید.", true);
-  }
-  updateStats();
-  updateCardCount();
-}
-
 /* ============================================================
    9. STATS
    ============================================================ */
 function updateStats() {
   if (statTotal) statTotal.textContent = allCards.length;
-
-  // Count unique tags
   const uniqueTags = new Set();
   allCards.forEach((c) => (c.tags || []).forEach((t) => uniqueTags.add(t)));
   if (statTags) statTags.textContent = uniqueTags.size;
-
-  // Filtered count
   const filtered = getFilteredCards();
   if (statFiltered) statFiltered.textContent = filtered.length;
 }
@@ -423,28 +426,17 @@ function updateStats() {
    ============================================================ */
 function updateTagFilterOptions() {
   if (!tagFilterSelect) return;
-
-  // Collect all unique tags
   const uniqueTags = new Set();
   allCards.forEach((c) => (c.tags || []).forEach((t) => uniqueTags.add(t)));
-
-  // Save current selection
   const currentVal = tagFilterSelect.value;
-
-  // Reset dropdown (keep "all")
   tagFilterSelect.innerHTML = '<option value="all">🏷️ همه دسته‌ها</option>';
-
-  // Sort alphabetically (Persian)
   const sortedTags = [...uniqueTags].sort((a, b) => a.localeCompare(b, "fa"));
-
   sortedTags.forEach((tag) => {
     const opt = document.createElement("option");
     opt.value = tag;
     opt.textContent = `🏷️ ${tag}`;
     tagFilterSelect.appendChild(opt);
   });
-
-  // Restore selection if still valid
   if (
     currentVal &&
     [...tagFilterSelect.options].some((o) => o.value === currentVal)
@@ -460,18 +452,12 @@ function updateTagFilterOptions() {
    ============================================================ */
 function getFilteredCards() {
   let result = [...allCards];
-
-  // View mode filter
   if (currentViewMode === "favorites") {
     result = result.filter((c) => c.favorite);
   }
-
-  // Tag filter
   if (currentTagFilter !== "all") {
     result = result.filter((c) => (c.tags || []).includes(currentTagFilter));
   }
-
-  // Search filter
   if (currentSearchQuery.trim()) {
     const q = currentSearchQuery.trim().toLowerCase();
     result = result.filter(
@@ -481,17 +467,15 @@ function getFilteredCards() {
         (c.meaning || "").toLowerCase().includes(q),
     );
   }
-
   return result;
 }
 
 /* ============================================================
-   12. GALLERY RENDERING (with filter)
+   12. GALLERY RENDERING
    ============================================================ */
 function renderGallery() {
   if (!galleryGrid) return;
   galleryGrid.innerHTML = "";
-
   const filtered = getFilteredCards();
 
   if (allCards.length === 0) {
@@ -501,27 +485,22 @@ function renderGallery() {
     updateStats();
     return;
   }
-
   if (emptyState) emptyState.style.display = "none";
-
   if (filtered.length === 0) {
     if (noResults) noResults.style.display = "block";
     galleryGrid.style.display = "none";
     updateStats();
     return;
   }
-
   if (noResults) noResults.style.display = "none";
   galleryGrid.style.display = "grid";
 
   filtered.forEach((card) => {
-    // Find real index in allCards for opening modal
     const realIndex = allCards.findIndex((c) => c.id === card.id);
-
+    if (realIndex === -1) return;
     const cardDiv = document.createElement("div");
     cardDiv.className = "small-card";
     if (card.favorite) cardDiv.classList.add("is-favorite");
-
     cardDiv.innerHTML = `
             ${card.favorite ? '<span class="favorite-badge">⭐</span>' : ""}
             <img src="${card.image || PLACEHOLDER_IMG}" 
@@ -545,12 +524,11 @@ function renderGallery() {
     cardDiv.addEventListener("click", () => openLargeModal(realIndex));
     galleryGrid.appendChild(cardDiv);
   });
-
   updateStats();
 }
 
 /* ============================================================
-   13. SEARCH & FILTER EVENT HANDLERS
+   13. SEARCH & FILTER EVENTS
    ============================================================ */
 if (searchInput) {
   searchInput.addEventListener("input", (e) => {
@@ -559,7 +537,6 @@ if (searchInput) {
     renderGallery();
   });
 }
-
 if (clearSearchBtn) {
   clearSearchBtn.addEventListener("click", () => {
     searchInput.value = "";
@@ -568,14 +545,12 @@ if (clearSearchBtn) {
     renderGallery();
   });
 }
-
 if (tagFilterSelect) {
   tagFilterSelect.addEventListener("change", (e) => {
     currentTagFilter = e.target.value;
     renderGallery();
   });
 }
-
 if (viewAllBtn) {
   viewAllBtn.addEventListener("click", () => {
     currentViewMode = "all";
@@ -584,7 +559,6 @@ if (viewAllBtn) {
     renderGallery();
   });
 }
-
 if (viewFavoritesBtn) {
   viewFavoritesBtn.addEventListener("click", () => {
     currentViewMode = "favorites";
@@ -600,13 +574,11 @@ if (viewFavoritesBtn) {
 function updateCardCount() {
   if (!cardCountBadge) return;
   cardCountBadge.textContent = `${allCards.length} کارت`;
-
   if (startQuizBtn) {
     if (allCards.length < 4) {
       startQuizBtn.disabled = true;
       startQuizBtn.style.opacity = "0.5";
       startQuizBtn.style.cursor = "not-allowed";
-      startQuizBtn.title = "برای شروع آزمون حداقل ۴ کارت نیاز است";
     } else {
       startQuizBtn.disabled = false;
       startQuizBtn.style.opacity = "1";
@@ -616,7 +588,7 @@ function updateCardCount() {
 }
 
 /* ============================================================
-   15. LARGE FLASHCARD MODAL
+   15. LARGE MODAL
    ============================================================ */
 function openLargeModal(index) {
   currentIndex = index;
@@ -625,16 +597,13 @@ function openLargeModal(index) {
   largeFlashcard.classList.remove("is-flipped");
   document.body.style.overflow = "hidden";
 }
-
 function closeLargeModal() {
   modalOverlay.classList.remove("active");
   document.body.style.overflow = "auto";
 }
-
 function updateLargeCard() {
   if (allCards.length === 0) return;
   const card = allCards[currentIndex];
-
   modalImage.src = card.image || PLACEHOLDER_IMG;
   modalChar.textContent = card.character;
   modalPinyin.textContent = card.pinyin;
@@ -644,18 +613,14 @@ function updateLargeCard() {
   modalSentenceMeaning.textContent = card.sentenceMeaning || "";
   largeFlashcard.classList.remove("is-flipped");
 
-  // Update tags display
   if (cardTagsDisplay) {
-    if (card.tags && card.tags.length > 0) {
-      cardTagsDisplay.innerHTML = card.tags
-        .map((t) => `<span class="display-tag">🏷️ ${t}</span>`)
-        .join("");
-    } else {
-      cardTagsDisplay.innerHTML = "";
-    }
+    cardTagsDisplay.innerHTML =
+      card.tags && card.tags.length > 0
+        ? card.tags
+            .map((t) => `<span class="display-tag">🏷️ ${t}</span>`)
+            .join("")
+        : "";
   }
-
-  // Update favorite button
   if (favoriteCurrentCardBtn) {
     favoriteCurrentCardBtn.classList.toggle("active", card.favorite);
     favoriteCurrentCardBtn.textContent = card.favorite ? "⭐" : "☆";
@@ -663,34 +628,37 @@ function updateLargeCard() {
 }
 
 /* ============================================================
-   16. FAVORITE TOGGLE
+   16. FAVORITE
    ============================================================ */
 if (favoriteCurrentCardBtn) {
-  favoriteCurrentCardBtn.addEventListener("click", () => {
+  favoriteCurrentCardBtn.addEventListener("click", async () => {
     const card = allCards[currentIndex];
     if (!card) return;
-    card.favorite = !card.favorite;
-    saveCards();
-    updateLargeCard();
-    renderGallery();
-    showToast(card.favorite ? "⭐ به محبوب‌ها اضافه شد" : "از محبوب‌ها حذف شد");
+    try {
+      await CardStore.toggleFavorite(LEVEL, card.id);
+      card.favorite = !card.favorite;
+      updateLargeCard();
+      renderGallery();
+      showToast(
+        card.favorite ? "⭐ به محبوب‌ها اضافه شد" : "از محبوب‌ها حذف شد",
+      );
+    } catch (error) {
+      console.error(error);
+      showToast("خطا در تغییر محبوب.", true);
+    }
   });
 }
 
 /* ============================================================
-   17. TAG MANAGEMENT (in Add/Edit form)
+   17. TAGS IN FORM
    ============================================================ */
 function renderSelectedTags() {
   if (!selectedTagsContainer) return;
   selectedTagsContainer.innerHTML = "";
-
   formSelectedTags.forEach((tag) => {
     const chip = document.createElement("div");
     chip.className = "tag-chip";
-    chip.innerHTML = `
-            <span>${tag}</span>
-            <button type="button" class="remove-tag" data-tag="${tag}">✕</button>
-        `;
+    chip.innerHTML = `<span>${tag}</span><button type="button" class="remove-tag" data-tag="${tag}">✕</button>`;
     chip.querySelector(".remove-tag").addEventListener("click", () => {
       formSelectedTags = formSelectedTags.filter((t) => t !== tag);
       renderSelectedTags();
@@ -699,14 +667,12 @@ function renderSelectedTags() {
     selectedTagsContainer.appendChild(chip);
   });
 }
-
 function updateTagSuggestionButtons() {
   document.querySelectorAll(".tag-suggestion").forEach((btn) => {
     const tag = btn.dataset.tag;
     btn.classList.toggle("selected", formSelectedTags.includes(tag));
   });
 }
-
 function addTagToForm(tag) {
   const cleanTag = tag.trim();
   if (!cleanTag) return;
@@ -718,8 +684,6 @@ function addTagToForm(tag) {
   renderSelectedTags();
   updateTagSuggestionButtons();
 }
-
-// Attach click to predefined tag suggestions
 document.querySelectorAll(".tag-suggestion").forEach((btn) => {
   btn.addEventListener("click", () => {
     const tag = btn.dataset.tag;
@@ -732,15 +696,12 @@ document.querySelectorAll(".tag-suggestion").forEach((btn) => {
     updateTagSuggestionButtons();
   });
 });
-
-// Add custom tag
 if (addCustomTagBtn) {
   addCustomTagBtn.addEventListener("click", () => {
     addTagToForm(customTagInput.value);
     customTagInput.value = "";
   });
 }
-
 if (customTagInput) {
   customTagInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") {
@@ -767,15 +728,12 @@ function openAddModal() {
   addModalOverlay.classList.add("active");
   document.body.style.overflow = "hidden";
 }
-
 function openEditModal(cardId) {
   const card = allCards.find((c) => c.id === cardId);
   if (!card) return;
-
   editingCardId = cardId;
   formTitle.textContent = "✏️ ویرایش کارت";
   formSubmitBtn.textContent = "✏️ ذخیره تغییرات";
-
   document.getElementById("input-char").value = card.character;
   document.getElementById("input-pinyin").value = card.pinyin;
   document.getElementById("input-meaning").value = card.meaning;
@@ -784,23 +742,19 @@ function openEditModal(cardId) {
     card.sentencePinyin || "";
   document.getElementById("input-sentence-meaning").value =
     card.sentenceMeaning || "";
-
   formSelectedTags = [...(card.tags || [])];
   renderSelectedTags();
   updateTagSuggestionButtons();
-
   selectedImageBase64 = card.image || "";
   if (card.image) {
     imagePreview.innerHTML = `<img src="${card.image}" alt="Preview">`;
   } else {
     imagePreview.innerHTML = "<span>🐼 پیش‌نمایش تصویر</span>";
   }
-
   closeLargeModal();
   addModalOverlay.classList.add("active");
   document.body.style.overflow = "hidden";
 }
-
 function closeAddModalFunc() {
   addModalOverlay.classList.remove("active");
   document.body.style.overflow = "auto";
@@ -810,10 +764,8 @@ function closeAddModalFunc() {
   formSelectedTags = [];
   imagePreview.innerHTML = "<span>🐼 پیش‌نمایش تصویر</span>";
 }
-
-function handleAddCardSubmit(event) {
+async function handleAddCardSubmit(event) {
   event.preventDefault();
-
   const cardData = {
     character: document.getElementById("input-char").value.trim(),
     pinyin: document.getElementById("input-pinyin").value.trim(),
@@ -825,54 +777,50 @@ function handleAddCardSubmit(event) {
     sentenceMeaning: document
       .getElementById("input-sentence-meaning")
       .value.trim(),
+    image: selectedImageBase64,
     tags: [...formSelectedTags],
   };
-
-  if (editingCardId) {
-    const card = allCards.find((c) => c.id === editingCardId);
-    if (card) {
-      Object.assign(card, cardData);
-      if (selectedImageBase64) card.image = selectedImageBase64;
+  const originalText = formSubmitBtn.textContent;
+  formSubmitBtn.disabled = true;
+  formSubmitBtn.textContent = "⏳ در حال ذخیره...";
+  try {
+    if (editingCardId) {
+      await CardStore.update(LEVEL, editingCardId, cardData);
+      showToast("✅ کارت ویرایش شد!");
+    } else {
+      await CardStore.create(LEVEL, cardData);
+      showToast("✅ کارت اضافه شد!");
     }
-    showToast("✅ کارت ویرایش شد!");
-  } else {
-    const newCard = {
-      id: "card_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9),
-      image: selectedImageBase64,
-      favorite: false,
-      ...cardData,
-    };
-    allCards.push(newCard);
-    showToast("✅ کارت اضافه شد!");
+    await loadCards();
+    updateTagFilterOptions();
+    closeAddModalFunc();
+  } catch (error) {
+    console.error("Save card error:", error);
+    showToast(error.message || "خطا در ذخیره کارت.", true);
+  } finally {
+    formSubmitBtn.disabled = false;
+    formSubmitBtn.textContent = originalText;
   }
-
-  saveCards();
-  updateTagFilterOptions();
-  closeAddModalFunc();
-  renderGallery();
 }
 
 /* ============================================================
    19. DELETE CARD
    ============================================================ */
-function deleteCard(cardId) {
+async function deleteCard(cardId) {
   const card = allCards.find((c) => c.id === cardId);
   if (!card) return;
-
   if (!confirm(`آیا از حذف کارت "${card.character}" مطمئن هستید؟`)) return;
-
-  allCards = allCards.filter((c) => c.id !== cardId);
-  saveCards();
-
-  localStorage.removeItem(NOTE_STORAGE_PREFIX + cardId + "_text");
-  localStorage.removeItem(NOTE_STORAGE_PREFIX + cardId + "_styles");
-  localStorage.removeItem(NOTE_STORAGE_PREFIX + cardId + "_canvas");
-  localStorage.removeItem(NOTE_STORAGE_PREFIX + cardId + "_gridsize");
-
-  closeLargeModal();
-  updateTagFilterOptions();
-  renderGallery();
-  showToast("🗑️ کارت حذف شد.");
+  try {
+    // Also delete note
+    await NoteStore.remove(cardId);
+    await CardStore.remove(LEVEL, cardId);
+    closeLargeModal();
+    await loadCards();
+    showToast("🗑️ کارت حذف شد.");
+  } catch (error) {
+    console.error("Delete error:", error);
+    showToast(error.message || "خطا در حذف کارت.", true);
+  }
 }
 
 /* ============================================================
@@ -893,7 +841,7 @@ async function handleImageUpload(event) {
 }
 
 /* ============================================================
-   21. IMAGE LIGHTBOX
+   21. LIGHTBOX
    ============================================================ */
 function openLightbox(src) {
   if (!src || src.includes("placeholder")) return;
@@ -901,7 +849,6 @@ function openLightbox(src) {
   lightboxOverlay.classList.add("active");
   document.body.style.overflow = "hidden";
 }
-
 function closeLightbox() {
   lightboxOverlay.classList.remove("active");
   if (modalOverlay.classList.contains("active")) {
@@ -912,7 +859,7 @@ function closeLightbox() {
 }
 
 /* ============================================================
-   22. NOTEPAD
+   22. NOTEPAD (uses NoteStore)
    ============================================================ */
 function initCanvas() {
   if (!drawCanvas) return;
@@ -929,18 +876,31 @@ function initCanvas() {
   ctx.lineJoin = "round";
 }
 
-function openNotepad() {
+async function openNotepad() {
   if (allCards.length === 0) return;
   const card = allCards[currentIndex];
   currentNoteCardId = card.id;
-  loadNote(card.id);
+
+  // Show loading state
   notepadOverlay.classList.add("active");
   document.body.style.overflow = "hidden";
+
+  // Load note via NoteStore
+  try {
+    const note = await NoteStore.get(card.id);
+    applyNoteToUI(note);
+  } catch (error) {
+    console.error("Load note error:", error);
+    showToast("خطا در بارگذاری یادداشت.", true);
+  }
+
   setTimeout(() => {
     initCanvas();
-    const savedCanvas = localStorage.getItem(
-      NOTE_STORAGE_PREFIX + card.id + "_canvas",
-    );
+    // Redraw canvas from saved Base64
+    const savedCanvas =
+      typeof note !== "undefined" && note && note.canvas
+        ? note.canvas
+        : localStorage.getItem("flashcard_note_" + card.id + "_canvas");
     if (savedCanvas) {
       const img = new Image();
       img.onload = () => {
@@ -950,6 +910,29 @@ function openNotepad() {
       img.src = savedCanvas;
     }
   }, 100);
+}
+
+function applyNoteToUI(note) {
+  noteTextarea.value = note.text || "";
+
+  if (note.styles) {
+    if (note.styles.fontFamily) {
+      fontFamilySelect.value = note.styles.fontFamily;
+      noteTextarea.style.fontFamily = note.styles.fontFamily;
+    }
+    if (note.styles.fontSize) {
+      fontSizeSelect.value = note.styles.fontSize;
+      noteTextarea.style.fontSize = note.styles.fontSize + "px";
+    }
+    if (note.styles.color) {
+      textColorInput.value = note.styles.color;
+      noteTextarea.style.color = note.styles.color;
+    }
+  }
+
+  if (typeof note.gridSize === "number") {
+    setGridSize(note.gridSize, true);
+  }
 }
 
 function closeNotepad() {
@@ -962,72 +945,38 @@ function closeNotepad() {
   currentNoteCardId = null;
 }
 
-function loadNote(cardId) {
-  noteTextarea.value =
-    localStorage.getItem(NOTE_STORAGE_PREFIX + cardId + "_text") || "";
-  const savedStyles = localStorage.getItem(
-    NOTE_STORAGE_PREFIX + cardId + "_styles",
-  );
-  if (savedStyles) {
-    try {
-      const styles = JSON.parse(savedStyles);
-      if (styles.fontFamily) {
-        fontFamilySelect.value = styles.fontFamily;
-        noteTextarea.style.fontFamily = styles.fontFamily;
-      }
-      if (styles.fontSize) {
-        fontSizeSelect.value = styles.fontSize;
-        noteTextarea.style.fontSize = styles.fontSize + "px";
-      }
-      if (styles.color) {
-        textColorInput.value = styles.color;
-        noteTextarea.style.color = styles.color;
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }
-  const savedGridSize = localStorage.getItem(
-    NOTE_STORAGE_PREFIX + cardId + "_gridsize",
-  );
-  if (savedGridSize !== null) {
-    setGridSize(parseInt(savedGridSize), true);
-  }
-}
-
-function saveNote() {
+async function saveNote() {
   if (!currentNoteCardId) return;
-  localStorage.setItem(
-    NOTE_STORAGE_PREFIX + currentNoteCardId + "_text",
-    noteTextarea.value,
-  );
-  const styles = {
-    fontFamily: fontFamilySelect.value,
-    fontSize: fontSizeSelect.value,
-    color: textColorInput.value,
+
+  const noteData = {
+    text: noteTextarea.value || "",
+    canvas: drawCanvas ? drawCanvas.toDataURL("image/png") : "",
+    gridSize:
+      parseInt(notepadCanvas.style.getPropertyValue("--grid-size")) || 20,
+    styles: {
+      fontFamily: fontFamilySelect.value,
+      fontSize: fontSizeSelect.value,
+      color: textColorInput.value,
+    },
   };
-  localStorage.setItem(
-    NOTE_STORAGE_PREFIX + currentNoteCardId + "_styles",
-    JSON.stringify(styles),
-  );
-  if (drawCanvas) {
-    localStorage.setItem(
-      NOTE_STORAGE_PREFIX + currentNoteCardId + "_canvas",
-      drawCanvas.toDataURL("image/png"),
-    );
-  }
-  const currentGridSize =
-    notepadCanvas.style.getPropertyValue("--grid-size") || "20px";
-  const gridNum = parseInt(currentGridSize) || 0;
-  localStorage.setItem(
-    NOTE_STORAGE_PREFIX + currentNoteCardId + "_gridsize",
-    gridNum,
-  );
-  saveNoteBtn.textContent = "✅ ذخیره شد!";
-  showToast("💾 یادداشت ذخیره شد.");
-  setTimeout(() => {
+
+  saveNoteBtn.disabled = true;
+  saveNoteBtn.textContent = "⏳ در حال ذخیره...";
+
+  try {
+    await NoteStore.save(currentNoteCardId, noteData);
+    saveNoteBtn.textContent = "✅ ذخیره شد!";
+    showToast("💾 یادداشت ذخیره شد.");
+  } catch (error) {
+    console.error("Save note error:", error);
+    showToast("خطا در ذخیره یادداشت.", true);
     saveNoteBtn.textContent = "💾 ذخیره";
-  }, 1500);
+  } finally {
+    setTimeout(() => {
+      saveNoteBtn.textContent = "💾 ذخیره";
+      saveNoteBtn.disabled = false;
+    }, 1500);
+  }
 }
 
 function switchMode(mode) {
@@ -1052,7 +1001,7 @@ function switchMode(mode) {
       initCanvas();
       if (currentNoteCardId) {
         const savedCanvas = localStorage.getItem(
-          NOTE_STORAGE_PREFIX + currentNoteCardId + "_canvas",
+          "flashcard_note_" + currentNoteCardId + "_canvas",
         );
         if (savedCanvas) {
           const img = new Image();
@@ -1088,14 +1037,12 @@ function getMousePos(e) {
   const clientY = e.touches ? e.touches[0].clientY : e.clientY;
   return { x: clientX - rect.left, y: clientY - rect.top };
 }
-
 function startDrawing(e) {
   isDrawing = true;
   const pos = getMousePos(e);
   lastX = pos.x;
   lastY = pos.y;
 }
-
 function draw(e) {
   if (!isDrawing) return;
   e.preventDefault();
@@ -1109,7 +1056,6 @@ function draw(e) {
   lastX = pos.x;
   lastY = pos.y;
 }
-
 function stopDrawing() {
   isDrawing = false;
 }
@@ -1267,14 +1213,12 @@ if (clearCanvasBtn) {
     }
   });
 }
-
 gridSizeBtns.forEach((btn) => {
   btn.addEventListener("click", () => {
     const size = parseInt(btn.dataset.gridSize);
     setGridSize(size, true);
   });
 });
-
 if (drawCanvas) {
   drawCanvas.addEventListener("mousedown", startDrawing);
   drawCanvas.addEventListener("mousemove", draw);
@@ -1284,7 +1228,6 @@ if (drawCanvas) {
   drawCanvas.addEventListener("touchmove", draw, { passive: false });
   drawCanvas.addEventListener("touchend", stopDrawing);
 }
-
 if (saveNoteBtn) saveNoteBtn.addEventListener("click", saveNote);
 
 /* ============================================================
@@ -1301,8 +1244,6 @@ document.addEventListener("keydown", (e) => {
     else if (addModalOverlay && addModalOverlay.classList.contains("active"))
       closeAddModalFunc();
   }
-
-  // Arrow navigation only if modal open and not typing in input
   if (
     modalOverlay &&
     modalOverlay.classList.contains("active") &&
@@ -1310,7 +1251,6 @@ document.addEventListener("keydown", (e) => {
   ) {
     const tag = document.activeElement.tagName;
     if (tag === "INPUT" || tag === "TEXTAREA") return;
-
     if (e.key === "ArrowRight") {
       currentIndex = (currentIndex + 1) % allCards.length;
       updateLargeCard();
@@ -1325,10 +1265,11 @@ document.addEventListener("keydown", (e) => {
 });
 
 /* ============================================================
-   26. INITIALIZATION
+   26. INIT
    ============================================================ */
 document.addEventListener("DOMContentLoaded", async () => {
-  loadCards();
+  setupAuthUI();
+  await loadCards();
   await loadVoices();
 
   document.body.addEventListener(
@@ -1340,7 +1281,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     { once: true },
   );
 
-  console.log("🐼 Chinese Flashcards App initialized!");
+  console.log("🐼 Chinese Flashcards App v2 initialized!");
   console.log(`📚 HSK Level: ${LEVEL}`);
   console.log(`📇 Total Cards: ${allCards.length}`);
+  console.log(
+    `🔐 Logged In: ${typeof AuthAPI !== "undefined" ? AuthAPI.isLoggedIn() : false}`,
+  );
 });

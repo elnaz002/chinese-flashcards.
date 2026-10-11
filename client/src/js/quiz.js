@@ -1,8 +1,9 @@
 /* ============================================================
-   Quiz System (Full)
+   Quiz System (Full v2)
    ============================================================
    - 4 Modes: listening, char-to-meaning, meaning-to-char, char-to-pinyin
-   - Uses cards from the current HSK level's localStorage
+   - Uses cards from CardStore (server or local)
+   - Saves results to QuizStore (server or local)
    - Shows progress, score, and end-of-quiz review
    - Supports early exit and early finish
    ============================================================ */
@@ -20,22 +21,20 @@ let wrongAnswers = [];
 let chineseVoice = null;
 let isAnswered = false;
 let quizFinished = false;
+let quizStartTime = 0;
 
 const LEVEL = new URLSearchParams(window.location.search).get("level") || "1";
-const STORAGE_KEY = `flashcards_hsk_${LEVEL}`;
 const PLACEHOLDER_IMG = "../public/images/placeholder.png";
 
 /* ============================================================
    2. DOM ELEMENTS
    ============================================================ */
-// Setup screen
 const setupScreen = document.getElementById("quiz-setup");
 const notEnoughCards = document.getElementById("not-enough-cards");
 const quizOptions = document.getElementById("quiz-options");
 const startFinalBtn = document.getElementById("start-quiz-final-btn");
 const backBtn = document.getElementById("quiz-back-btn");
 
-// Play screen
 const playScreen = document.getElementById("quiz-play");
 const progressText = document.getElementById("progress-text");
 const scoreText = document.getElementById("score-text");
@@ -43,12 +42,10 @@ const progressFill = document.getElementById("progress-fill");
 const questionArea = document.getElementById("question-area");
 const answersGrid = document.getElementById("answers-grid");
 
-// 🆕 Top bar
 const quizExitBtn = document.getElementById("quiz-exit-btn");
 const quizFinishBtn = document.getElementById("quiz-finish-btn");
 const modeBadge = document.getElementById("mode-badge");
 
-// Result screen
 const resultScreen = document.getElementById("quiz-result");
 const resultEmoji = document.getElementById("result-emoji");
 const resultTitle = document.getElementById("result-title");
@@ -60,10 +57,8 @@ const resultBackBtn = document.getElementById("result-back-btn");
 const wrongAnswersSection = document.getElementById("wrong-answers-section");
 const wrongAnswersList = document.getElementById("wrong-answers-list");
 
-// Toast
 const toastEl = document.getElementById("toast");
 
-// Update back button links
 if (backBtn) backBtn.href = `hsk.html?level=${LEVEL}`;
 if (resultBackBtn) resultBackBtn.href = `hsk.html?level=${LEVEL}`;
 
@@ -84,7 +79,6 @@ function showToast(message, isError = false) {
 function loadVoices() {
   return new Promise((resolve) => {
     let voices = window.speechSynthesis.getVoices();
-
     const findVoice = () => {
       voices = window.speechSynthesis.getVoices();
       chineseVoice = voices.find(
@@ -93,7 +87,6 @@ function loadVoices() {
       );
       return chineseVoice;
     };
-
     if (voices.length > 0) {
       resolve(!!findVoice());
     } else {
@@ -116,12 +109,15 @@ function speakText(text) {
 }
 
 /* ============================================================
-   5. LOAD CARDS
+   5. LOAD CARDS (via CardStore)
    ============================================================ */
-function loadCards() {
+async function loadCards() {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    allCards = stored ? JSON.parse(stored) : [];
+    const raw = await CardStore.getAll(LEVEL);
+    allCards = raw.map((c) => ({
+      ...c,
+      id: c.id || c._id,
+    }));
   } catch (e) {
     console.error("Error loading cards:", e);
     allCards = [];
@@ -159,7 +155,7 @@ if (startFinalBtn) {
 }
 
 /* ============================================================
-   7. SHUFFLE HELPER
+   7. SHUFFLE
    ============================================================ */
 function shuffleArray(arr) {
   const copy = [...arr];
@@ -180,18 +176,17 @@ function startQuiz() {
   }
 
   quizCards = shuffleArray(allCards).slice(0, count);
-
   currentQuestionIndex = 0;
   score = 0;
   wrongAnswers = [];
   isAnswered = false;
   quizFinished = false;
+  quizStartTime = Date.now();
 
   setupScreen.style.display = "none";
   playScreen.style.display = "block";
   resultScreen.style.display = "none";
 
-  // 🆕 Update mode badge
   if (modeBadge) {
     const labels = {
       listening: "🎧 شنیداری",
@@ -207,7 +202,7 @@ function startQuiz() {
 }
 
 /* ============================================================
-   9. PROGRESS UPDATE
+   9. PROGRESS
    ============================================================ */
 function updateProgress() {
   const total = quizCards.length;
@@ -224,7 +219,6 @@ function renderQuestion() {
   isAnswered = false;
   const card = quizCards[currentQuestionIndex];
   const correctAnswer = getCorrectAnswer(card);
-
   const options = buildOptions(card, correctAnswer);
 
   questionArea.innerHTML = "";
@@ -300,13 +294,10 @@ function getCorrectAnswer(card) {
 function buildOptions(card, correctAnswer) {
   const others = allCards.filter((c) => c.id !== card.id);
   const shuffledOthers = shuffleArray(others).slice(0, 3);
-
   const wrongs = shuffledOthers.map((c) => getCorrectAnswer(c));
   const uniqueWrongs = [...new Set(wrongs)].filter((v) => v !== correctAnswer);
 
-  while (uniqueWrongs.length < 3) {
-    uniqueWrongs.push("---");
-  }
+  while (uniqueWrongs.length < 3) uniqueWrongs.push("---");
 
   const options = [
     { value: correctAnswer, correct: true },
@@ -333,11 +324,10 @@ function handleAnswer(btn, chosenValue, correctAnswer, card) {
   } else {
     btn.classList.add("wrong");
     allBtns.forEach((b) => {
-      if (b.dataset.value === correctAnswer) {
-        b.classList.add("reveal-correct");
-      }
+      if (b.dataset.value === correctAnswer) b.classList.add("reveal-correct");
     });
     wrongAnswers.push({
+      cardId: card.id || card._id,
       card: card,
       chosenValue: chosenValue,
       correctValue: correctAnswer,
@@ -348,7 +338,7 @@ function handleAnswer(btn, chosenValue, correctAnswer, card) {
 
   setTimeout(
     () => {
-      if (quizFinished) return; // In case user clicked finish
+      if (quizFinished) return;
       currentQuestionIndex++;
       if (currentQuestionIndex < quizCards.length) {
         updateProgress();
@@ -362,9 +352,9 @@ function handleAnswer(btn, chosenValue, correctAnswer, card) {
 }
 
 /* ============================================================
-   14. SHOW RESULTS
+   14. SHOW RESULTS (and save to server)
    ============================================================ */
-function showResults() {
+async function showResults() {
   quizFinished = true;
 
   playScreen.style.display = "none";
@@ -372,6 +362,7 @@ function showResults() {
 
   const total = quizCards.length;
   const percent = total > 0 ? Math.round((score / total) * 100) : 0;
+  const duration = Math.round((Date.now() - quizStartTime) / 1000);
 
   resultScore.textContent = `امتیاز شما: ${score} از ${total}`;
   resultPercentage.textContent = `${percent}%`;
@@ -390,18 +381,16 @@ function showResults() {
     resultTitle.textContent = "نیاز به تمرین بیشتر داری";
   }
 
-  // 🆕 Show note if user finished early
   if (resultNote) {
-    const totalOriginal = quizCards.length;
     const answered = currentQuestionIndex + (isAnswered ? 1 : 0);
-    if (answered < totalOriginal) {
-      resultNote.textContent = `(شما آزمون را زودتر تمام کردید - ${score} پاسخ درست از ${answered} سوال)`;
+    if (answered < total) {
+      resultNote.textContent = `(آزمون را زودتر تمام کردید - ${score} پاسخ درست از ${answered} سوال)`;
     } else {
       resultNote.textContent = "";
     }
   }
 
-  // Render wrong answers
+  // Render wrong answers list
   if (wrongAnswers.length > 0) {
     wrongAnswersSection.style.display = "block";
     wrongAnswersList.innerHTML = "";
@@ -426,13 +415,29 @@ function showResults() {
   } else {
     wrongAnswersSection.style.display = "none";
   }
+
+  // ===== Save to server (or local) =====
+  const resultData = {
+    hskLevel: parseInt(LEVEL),
+    mode: quizMode,
+    totalQuestions: total,
+    correctAnswers: score,
+    wrongCardIds: wrongAnswers.map((w) => w.cardId),
+    durationInSeconds: duration,
+  };
+
+  try {
+    await QuizStore.saveResult(resultData);
+    console.log("✅ Quiz result saved");
+  } catch (error) {
+    console.error("❌ Failed to save quiz result:", error);
+    showToast("خطا در ذخیره نتیجه آزمون.", true);
+  }
 }
 
 /* ============================================================
-   15. EXIT & FINISH (🆕)
+   15. EXIT & FINISH
    ============================================================ */
-
-// Exit quiz without saving
 if (quizExitBtn) {
   quizExitBtn.addEventListener("click", () => {
     if (confirm("آیا از خروج از آزمون مطمئن هستید؟ نتایج ذخیره نخواهد شد.")) {
@@ -441,11 +446,9 @@ if (quizExitBtn) {
   });
 }
 
-// Finish quiz early and show results
 if (quizFinishBtn) {
   quizFinishBtn.addEventListener("click", () => {
     if (quizFinished) return;
-
     const answered = isAnswered
       ? currentQuestionIndex + 1
       : currentQuestionIndex;
@@ -465,7 +468,6 @@ if (quizFinishBtn) {
         `شما به ${answered} از ${total} سوال پاسخ داده‌اید. آیا می‌خواهید نتیجه را ببینید؟`,
       )
     ) {
-      // Trim quizCards to answered ones
       quizCards = quizCards.slice(0, answered);
       showResults();
     }
@@ -487,15 +489,14 @@ if (retryBtn) {
    17. INIT
    ============================================================ */
 document.addEventListener("DOMContentLoaded", async () => {
-  loadCards();
+  await loadCards();
   await loadVoices();
 
   document.querySelectorAll(".mode-card").forEach((card) => {
-    if (card.querySelector("input").checked) {
-      card.classList.add("selected");
-    }
+    if (card.querySelector("input").checked) card.classList.add("selected");
   });
 
   console.log("🎯 Quiz page initialized. Level:", LEVEL);
   console.log(`📇 Available cards: ${allCards.length}`);
+  console.log(`🔐 Logged In: ${AuthAPI.isLoggedIn()}`);
 });
