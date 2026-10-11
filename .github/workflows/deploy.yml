@@ -35,14 +35,41 @@ jobs:
         working-directory: ./client
         run: npm run sass:build
 
-      - name: Prepare public folder
+      - name: Verify dist folder
         run: |
-          # Copy dist contents
+          echo "=== Contents of client/dist ==="
+          ls -la client/dist/
+          echo "=== Contents of client/public ==="
+          ls -la client/public/
+
+      - name: Prepare _site
+        run: |
+          # Clean and create _site
+          rm -rf _site
           mkdir -p _site
+
+          # Copy dist contents to _site root
           cp -r client/dist/* _site/
+
+          # Ensure index.html exists at root
+          if [ ! -f _site/index.html ]; then
+            echo "❌ ERROR: index.html not found in _site!"
+            exit 1
+          fi
+
           # Copy public folder (for images)
           mkdir -p _site/public
           cp -r client/public/* _site/public/
+
+          # Fix paths: ../public/ → ./public/ in all HTML files
+          echo "=== Fixing paths in HTML files ==="
+          find _site -name "*.html" -exec sed -i 's|\.\./public/|./public/|g' {} \;
+          find _site -name "*.html" -exec sed -i 's|\.\./\.\./public/|./public/|g' {} \;
+
+          echo "=== Contents of _site ==="
+          ls -la _site/
+          echo "=== First 30 lines of _site/index.html ==="
+          head -30 _site/index.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
